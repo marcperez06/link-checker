@@ -1,9 +1,9 @@
 package link_checker.objects;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
@@ -16,7 +16,7 @@ public class LinkCheckerInfo {
 	private static int numBadLinks;
 	private static int currentDepth;
 	private static int wishedDepth;
-	private static Map<String, LinkInfo> linksVisited = new HashMap<String, LinkInfo>();
+	private static Map<String, LinkInfo> linksVisited = new ConcurrentHashMap<String, LinkInfo>();
 	private static List<String> linksNotVisited = new ArrayList<String>();
 	
 	public static String getFirstLink() {
