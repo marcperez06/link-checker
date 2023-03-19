@@ -14,11 +14,19 @@ public class LinkInfo {
 	private List<String> entries;
 	private List<String> exits;
 	
-	public LinkInfo(String link, Status status) {
-		this.status = status;
-		this.link = link;
+	public LinkInfo() {
 		this.entries = new ArrayList<String>();
 		this.exits = new ArrayList<String>();
+	}
+	
+	public LinkInfo(String link) {
+		this();
+		this.link = link;
+	}
+	
+	public LinkInfo(String link, Status status) {
+		this(link);
+		this.status = status;
 	}
 
 	public String getLink() {

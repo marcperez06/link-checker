@@ -79,7 +79,7 @@ public class LinkCheckerInfo {
 		linksVisited = links;
 	}
 	
-	public static void addLinkNotVisited(String link, LinkInfo linkInfo) {
+	public static void addLinkVisited(String link, LinkInfo linkInfo) {
 		MapUtils.addObjectIfNotExistInMap(linksVisited, link, linkInfo);
 		if (linkInfo.getStatus() == Status.OK) {
 			addNumGoodLinks();
@@ -98,6 +98,14 @@ public class LinkCheckerInfo {
 	
 	public static void addLinkNotVisited(String link) {
 		ListUtils.addObjectInList(linksNotVisited, link);
+	}
+	
+	public static void addLinksNotVisited(List<String> link) {
+		ListUtils.addObjectsInList(linksNotVisited, link);
+	}
+	
+	public static void removeLinkNotVisited(String link) {
+		ListUtils.removeObjectInList(linksNotVisited, link);
 	}
 
 }

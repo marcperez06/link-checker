@@ -1,11 +1,16 @@
 package link_checker.services;
 
-import io.github.marcperez06.java_utilities.api.request.Request;
-import io.github.marcperez06.java_utilities.api.request.Response;
-import io.github.marcperez06.java_utilities.api.request.ResponseTypeHolder;
-import io.github.marcperez06.java_utilities.api.request.enums.HttpMethodEnum;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import io.github.marcperez06.java_utilities.api.rest.UnirestClient;
+import io.github.marcperez06.java_utilities.collection.map.MapUtils;
+import link_checker.enums.Status;
 import link_checker.objects.LinkCheckerInfo;
+import link_checker.objects.LinkInfo;
 
 public class LinkCheckerService {
 	
@@ -26,7 +31,7 @@ public class LinkCheckerService {
 	}
 	
 	private void fillLinkCheckerInfo() {
-		this.getLinkStatus("https://vandal.elespanol.com");
+		this.getLinkStatus("https://vandal.elespanolas.com");
 	}
 	
 	private void getPageInfo(Object configuration) {
@@ -34,14 +39,60 @@ public class LinkCheckerService {
 	}
 
 	private void getLinkStatus(String link) {
-		Request request = new Request(HttpMethodEnum.GET, link);
-		request.setResponseType(new ResponseTypeHolder<String>() {});
-		Response<String> response = api.send(request);
-		this.fillLinkStatus(response);
+		boolean existLink = MapUtils.existObjectInMap(LinkCheckerInfo.getLinksVisited(), link);
+		
+		if (!existLink) {
+			this.newLinkStrategy(link);
+		} else {
+			this.visitedLinkStrategy(link);
+		}
+
 	}
 	
-	private void fillLinkStatus(Response<String> response) {
+	private void visitedLinkStrategy(String link) {
+		LinkInfo linkInfo = MapUtils.getMapValue(LinkCheckerInfo.getLinksVisited(), link);
+		linkInfo.addEntry(link);
+	}
+	
+	private void newLinkStrategy(String link) {
+		LinkInfo linkInfo = new LinkInfo(link);
+		Document document = this.getHtmlPage(link);
 		
+		if (document != null) {
+			this.fillLinkInfoForGoodStatus(linkInfo, document);
+		} else {
+			this.fillLinkInfoForBadStatus(linkInfo);
+		}
+		
+		LinkCheckerInfo.addLinkVisited(link, linkInfo);
+		LinkCheckerInfo.removeLinkNotVisited(link);
+	}
+	
+	private void fillLinkInfoForGoodStatus(LinkInfo linkInfo, Document document) {
+		Elements linkElements = document.select("a");
+		List<String> links = linkElements.eachAttr("href");
+		linkInfo.setDepth(LinkCheckerInfo.getCurrentDepth());
+		linkInfo.setExits(links);
+		linkInfo.setStatus(Status.OK);
+		LinkCheckerInfo.addLinksNotVisited(links);
+	}
+	
+	private void fillLinkInfoForBadStatus(LinkInfo linkInfo) {
+		linkInfo.setStatus(Status.NOT_FOUND);
+		linkInfo.setExits(null);
+	}
+	
+	private Document getHtmlPage(String link) {
+		Document document = null;
+		
+		try {
+			document = Jsoup.connect(link).timeout(3000).get();
+		} catch (Exception e) {
+			System.out.println("Can not parse the page: " + link);
+			e.printStackTrace();
+		}
+		
+		return document;
 	}
 	
 }
