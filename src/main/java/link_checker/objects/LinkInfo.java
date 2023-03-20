@@ -45,6 +45,10 @@ public class LinkInfo {
 		this.status = status;
 	}
 	
+	public boolean isGood() {
+		return (this.status != null) ? this.status == Status.OK : false;
+	}
+	
 	public int getDepth() {
 		return this.depth;
 	}

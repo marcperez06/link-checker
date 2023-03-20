@@ -11,76 +11,87 @@ import link_checker.enums.Status;
 
 public class LinkCheckerInfo {
 	
-	private static String firstLink;
-	private static int numGoodLinks;
-	private static int numBadLinks;
-	private static int currentDepth;
-	private static int wishedDepth;
-	private static Map<String, LinkInfo> linksVisited = new ConcurrentHashMap<String, LinkInfo>();
-	private static List<String> linksNotVisited = new ArrayList<String>();
+	private String firstLink;
+	private int numGoodLinks;
+	private int numBadLinks;
+	private int currentDepth;
+	private int wishedDepth;
+	private Map<String, LinkInfo> linksVisited;
+	private List<String> linksNotVisited;
 	
-	public static String getFirstLink() {
-		return firstLink;
+	public LinkCheckerInfo(String link) {
+		this.firstLink = link;
+		this.numGoodLinks = 0;
+		this.numBadLinks = 0;
+		this.currentDepth = 0;
+		this.wishedDepth = 0;
+		this.linksVisited = new ConcurrentHashMap<String, LinkInfo>();
+		this.linksNotVisited = new ArrayList<String>();
+		ListUtils.addObjectInList(this.linksNotVisited, link);
 	}
 	
-	public static void setFirstLink(String link) {
-		firstLink = link;
+	public synchronized String getFirstLink() {
+		return this.firstLink;
 	}
 	
-	public static int getNumGoodLinks() {
-		return numGoodLinks;
+	public synchronized void setFirstLink(String link) {
+		this.firstLink = link;
 	}
 	
-	public static void setNumGoodLinks(int numLinks) {
-		numGoodLinks = numLinks;
+	public synchronized int getNumGoodLinks() {
+		return this.numGoodLinks;
 	}
 	
-	public static void addNumGoodLinks() {
-		numGoodLinks++;
+	public synchronized void setNumGoodLinks(int numLinks) {
+		this.numGoodLinks = numLinks;
 	}
 	
-	public static int getNumBadLinks() {
-		return numBadLinks;
+	public synchronized void addNumGoodLinks() {
+		this.numGoodLinks++;
 	}
 	
-	public static void setNumBadLinks(int numLinks) {
-		numBadLinks = numLinks;
+	public synchronized int getNumBadLinks() {
+		return this.numBadLinks;
 	}
 	
-	public static void addNumBadLinks() {
-		numBadLinks++;
+	public synchronized void setNumBadLinks(int numLinks) {
+		this.numBadLinks = numLinks;
 	}
 	
-	public static int getCurrentDepth() {
-		return currentDepth;
+	public synchronized void addNumBadLinks() {
+		this.numBadLinks++;
 	}
 	
-	public static void setCurrentDepth(int depth) {
-		currentDepth = depth;
+	public synchronized int getCurrentDepth() {
+		return this.currentDepth;
 	}
 	
-	public static void addCurrentDepth() {
-		currentDepth++;
+	public synchronized void setCurrentDepth(int depth) {
+		this.currentDepth = depth;
 	}
 	
-	public static int getWishedDepth() {
-		return wishedDepth;
+	public synchronized void addCurrentDepth() {
+		this.currentDepth++;
 	}
 	
-	public static void setWishedDepth(int depth) {
-		wishedDepth = depth;
+	public synchronized int getWishedDepth() {
+		return this.wishedDepth;
 	}
 	
-	public static Map<String, LinkInfo> getLinksVisited() {
-		return linksVisited;
+	public synchronized void setWishedDepth(int depth) {
+		this.wishedDepth = depth;
 	}
 	
-	public static void setLinksVisited(Map<String, LinkInfo> links) {
-		linksVisited = links;
+	public synchronized Map<String, LinkInfo> getLinksVisited() {
+		return this.linksVisited;
 	}
 	
-	public static void addLinkVisited(String link, LinkInfo linkInfo) {
-		MapUtils.addObjectIfNotExistInMap(linksVisited, link, linkInfo);
+	public synchronized void setLinksVisited(Map<String, LinkInfo> links) {
+		this.linksVisited = links;
+	}
+	
+	public synchronized void addLinkVisited(String link, LinkInfo linkInfo) {
+		MapUtils.addObjectIfNotExistInMap(this.linksVisited, link, linkInfo);
 		if (linkInfo.getStatus() == Status.OK) {
 			addNumGoodLinks();
 		} else {
@@ -88,24 +99,24 @@ public class LinkCheckerInfo {
 		}
 	}
 	
-	public static List<String> getLinksNotVisited() {
-		return linksNotVisited;
+	public synchronized List<String> getLinksNotVisited() {
+		return this.linksNotVisited;
 	}
 	
-	public static void setLinksNotVisited(List<String> links) {
-		linksNotVisited = links;
+	public synchronized void setLinksNotVisited(List<String> links) {
+		this.linksNotVisited = links;
 	}
 	
-	public static void addLinkNotVisited(String link) {
-		ListUtils.addObjectInList(linksNotVisited, link);
+	public synchronized void addLinkNotVisited(String link) {
+		ListUtils.addObjectInList(this.linksNotVisited, link);
 	}
 	
-	public static void addLinksNotVisited(List<String> link) {
-		ListUtils.addObjectsInList(linksNotVisited, link);
+	public synchronized void addLinksNotVisited(List<String> link) {
+		ListUtils.addObjectsInList(this.linksNotVisited, link);
 	}
 	
-	public static void removeLinkNotVisited(String link) {
-		ListUtils.removeObjectInList(linksNotVisited, link);
+	public synchronized void removeLinkNotVisited(String link) {
+		ListUtils.removeObjectInList(this.linksNotVisited, link);
 	}
 
 }

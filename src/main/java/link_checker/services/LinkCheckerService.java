@@ -1,5 +1,6 @@
 package link_checker.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -26,35 +27,63 @@ public class LinkCheckerService {
 		return (instance != null) ? instance : new LinkCheckerService();
 	}
 	
-	public static void getPageInfo() {
-		getInstance().fillLinkCheckerInfo();
+	public static LinkCheckerInfo getPageInfo(String link) {
+		LinkCheckerService service = getInstance(); 
+		return service.createLinkCheckerInfo(link);
 	}
 	
-	private void fillLinkCheckerInfo() {
-		this.getLinkStatus("https://vandal.elespanolas.com");
+	private LinkCheckerInfo createLinkCheckerInfo(String link) {
+		LinkCheckerInfo linkCheckerInfo = new LinkCheckerInfo(link);
+		linkCheckerInfo.addLinkNotVisited("https://goglopex.com/");
+		this.checkLinksNotVisited(linkCheckerInfo);
+		return linkCheckerInfo;
 	}
 	
-	private void getPageInfo(Object configuration) {
+	@SuppressWarnings("unchecked")
+	private void checkLinksNotVisited(LinkCheckerInfo linkCheckerInfo) {
+		ArrayList<String> linksNotVisited = (ArrayList<String>) linkCheckerInfo.getLinksNotVisited();
+		List<String> copyOfLinksNotVisited = (List<String>) linksNotVisited.clone();
+		
+		for (String linkNotVisited : copyOfLinksNotVisited) {
+			this.fillLinkCheckerInfo(linkCheckerInfo, linkNotVisited);
+		}
+		
+		// Validation Call + depth;
+		if (linkCheckerInfo.getLinksNotVisited().size() > 0) {
+			linkCheckerInfo.addCurrentDepth();
+			this.checkLinksNotVisited(linkCheckerInfo);
+		}
 		
 	}
-
-	private void getLinkStatus(String link) {
-		boolean existLink = MapUtils.existObjectInMap(LinkCheckerInfo.getLinksVisited(), link);
+	
+	private void fillLinkCheckerInfo(LinkCheckerInfo linkCheckerInfo, String link) {
+		boolean existLink = MapUtils.existObjectInMap(linkCheckerInfo.getLinksVisited(), link);
 		
 		if (!existLink) {
-			this.newLinkStrategy(link);
+			this.newLinkStrategy(linkCheckerInfo, link);
 		} else {
-			this.visitedLinkStrategy(link);
+			this.visitedLinkStrategy(linkCheckerInfo, link);
 		}
-
 	}
 	
-	private void visitedLinkStrategy(String link) {
-		LinkInfo linkInfo = MapUtils.getMapValue(LinkCheckerInfo.getLinksVisited(), link);
+	private void visitedLinkStrategy(LinkCheckerInfo linkCheckerInfo, String link) {
+		LinkInfo linkInfo = MapUtils.getMapValue(linkCheckerInfo.getLinksVisited(), link);
 		linkInfo.addEntry(link);
 	}
 	
-	private void newLinkStrategy(String link) {
+	private void newLinkStrategy(LinkCheckerInfo linkCheckerInfo, String link) {
+		LinkInfo linkInfo = this.getLinkInfo(link);
+		
+		if (linkInfo.isGood()) {
+			linkInfo.setDepth(linkCheckerInfo.getCurrentDepth());
+			linkCheckerInfo.addLinksNotVisited(linkInfo.getExits());
+		}
+		
+		linkCheckerInfo.addLinkVisited(link, linkInfo);
+		linkCheckerInfo.removeLinkNotVisited(link);
+	}
+	
+	private LinkInfo getLinkInfo(String link) {
 		LinkInfo linkInfo = new LinkInfo(link);
 		Document document = this.getHtmlPage(link);
 		
@@ -64,17 +93,14 @@ public class LinkCheckerService {
 			this.fillLinkInfoForBadStatus(linkInfo);
 		}
 		
-		LinkCheckerInfo.addLinkVisited(link, linkInfo);
-		LinkCheckerInfo.removeLinkNotVisited(link);
+		return linkInfo;
 	}
 	
 	private void fillLinkInfoForGoodStatus(LinkInfo linkInfo, Document document) {
 		Elements linkElements = document.select("a");
 		List<String> links = linkElements.eachAttr("href");
-		linkInfo.setDepth(LinkCheckerInfo.getCurrentDepth());
 		linkInfo.setExits(links);
 		linkInfo.setStatus(Status.OK);
-		LinkCheckerInfo.addLinksNotVisited(links);
 	}
 	
 	private void fillLinkInfoForBadStatus(LinkInfo linkInfo) {

@@ -9,7 +9,8 @@ import link_checker.services.LinkCheckerService;
 public class App {
     public static void main(String[] args) {
     	
-    	LinkCheckerService.getPageInfo();
+    	//LinkCheckerService.getPageInfo("https://vandal.elespanol.com");
+    	LinkCheckerService.getPageInfo("https://vivus.es");
     	
         System.out.println( "Hello World!" );
     }
