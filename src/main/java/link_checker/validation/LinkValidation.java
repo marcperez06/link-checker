@@ -12,7 +12,6 @@ public class LinkValidation {
 		boolean isValid = true;
 		isValid &= !StringUtils.isBlank(link);
 		isValid &= !StringUtils.valueContainsAnyWord(link, MAILTO, JAVASCRIPT, PHONE);
-		isValid &= !link.endsWith("#") || !link.endsWith("/"); 
 		return isValid;
 	}
 
