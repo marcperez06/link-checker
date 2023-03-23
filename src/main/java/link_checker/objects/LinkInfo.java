@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
 import link_checker.enums.Status;
+import link_checker.validation.LinkValidation;
 
 public class LinkInfo {
 	

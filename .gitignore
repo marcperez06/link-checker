@@ -2,6 +2,7 @@
 /dependency-reduced-pom.xml
 /resources/maven_settings/
 /resources/gpg/
+/output
 .classpath
 .project
 .settings

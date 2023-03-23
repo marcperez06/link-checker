@@ -17,7 +17,8 @@ public class LinkCheckerInfo {
 	private int currentDepth;
 	private int wishedDepth;
 	private Map<String, LinkInfo> linksVisited;
-	private List<String> linksNotVisited;
+	private List<LinkRelation> linksNotVisited;
+	private List<LinkRelation> linksNotValid;
 	
 	public LinkCheckerInfo(String link) {
 		this.firstLink = link;
@@ -26,8 +27,9 @@ public class LinkCheckerInfo {
 		this.currentDepth = 0;
 		this.wishedDepth = 0;
 		this.linksVisited = new ConcurrentHashMap<String, LinkInfo>();
-		this.linksNotVisited = new ArrayList<String>();
-		ListUtils.addObjectInList(this.linksNotVisited, link);
+		this.linksNotVisited = new ArrayList<LinkRelation>();
+		this.linksNotValid = new ArrayList<LinkRelation>();
+		ListUtils.addObjectInList(this.linksNotVisited, new LinkRelation(null, link));
 	}
 	
 	public synchronized String getFirstLink() {
@@ -99,24 +101,50 @@ public class LinkCheckerInfo {
 		}
 	}
 	
-	public synchronized List<String> getLinksNotVisited() {
+	public synchronized List<LinkRelation> getLinksNotVisited() {
 		return this.linksNotVisited;
 	}
 	
-	public synchronized void setLinksNotVisited(List<String> links) {
+	public synchronized void setLinksNotVisited(List<LinkRelation> links) {
 		this.linksNotVisited = links;
 	}
 	
-	public synchronized void addLinkNotVisited(String link) {
-		ListUtils.addObjectInList(this.linksNotVisited, link);
+	public synchronized void addLinkNotVisited(LinkRelation linkRelation) {
+		ListUtils.addObjectInList(this.linksNotVisited, linkRelation);
 	}
 	
-	public synchronized void addLinksNotVisited(List<String> link) {
-		ListUtils.addObjectsInList(this.linksNotVisited, link);
+	public synchronized void addLinksNotVisited(String fromLink, List<String> linksTo) {
+		for (String to : linksTo) {
+			LinkRelation relation = new LinkRelation(fromLink, to);
+			this.addLinkNotVisited(relation);
+		}
 	}
 	
-	public synchronized void removeLinkNotVisited(String link) {
-		ListUtils.removeObjectInList(this.linksNotVisited, link);
+	public synchronized void removeLinkNotVisited(LinkRelation linkRelation) {
+		ListUtils.removeObjectInList(this.linksNotVisited, linkRelation);
+	}
+	
+	public synchronized List<LinkRelation> getLinksNotValid() {
+		return this.linksNotValid;
+	}
+	
+	public synchronized void setLinksNotValid(List<LinkRelation> links) {
+		this.linksNotValid = links;
+	}
+	
+	public synchronized void addLinkNotValid(LinkRelation linkRelation) {
+		ListUtils.addObjectInList(this.linksNotValid, linkRelation);
+	}
+	
+	public synchronized void addLinksNotValid(String fromLink, List<String> linksTo) {
+		for (String to : linksTo) {
+			LinkRelation relation = new LinkRelation(fromLink, to);
+			this.addLinkNotValid(relation);
+		}
+	}
+	
+	public boolean reachWishedDepth() {
+		return this.currentDepth >= this.wishedDepth;
 	}
 
 }
