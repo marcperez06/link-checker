@@ -8,7 +8,7 @@ public class LinkValidation {
 	private static final String JAVASCRIPT = "javascript:";
 	private static final String PHONE = "tel:";
 	
-	public static boolean isValid(String link) {
+	public static boolean canCheck(String link) {
 		boolean isValid = true;
 		isValid &= !StringUtils.isBlank(link);
 		isValid &= !StringUtils.valueContainsAnyWord(link, MAILTO, JAVASCRIPT, PHONE);

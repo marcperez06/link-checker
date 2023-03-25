@@ -12,10 +12,11 @@ import io.github.marcperez06.java_utilities.api.request.Response;
 import io.github.marcperez06.java_utilities.api.request.enums.HttpMethodEnum;
 import io.github.marcperez06.java_utilities.api.rest.UnirestClient;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
+import io.github.marcperez06.java_utilities.timer.Timer;
 import io.github.marcperez06.java_utilities.uri.UriUtils;
 import io.github.marcperez06.java_utilities.validation.ValidationUtils;
 import link_checker.enums.Status;
-import link_checker.objects.LinkCheckerInfo;
+import link_checker.objects.LinkCheckerReport;
 import link_checker.objects.LinkInfo;
 import link_checker.objects.LinkRelation;
 import link_checker.validation.LinkValidation;
@@ -24,64 +25,76 @@ public class LinkCheckerService {
 
 	public static LinkCheckerService instance;
 
-	private UnirestClient api;
+	private final UnirestClient api;
+	private final Timer timer;
 
 	private LinkCheckerService() {
 		this.api = new UnirestClient();
+		this.timer = new Timer();
 	}
 
 	public static LinkCheckerService getInstance() {
 		return (instance != null) ? instance : new LinkCheckerService();
 	}
 
-	public static LinkCheckerInfo getPageInfo(String link) {
+	public static LinkCheckerReport getPageInfo(String link) {
 		LinkCheckerService service = getInstance();
 		return service.createLinkCheckerInfo(link);
 	}
 
-	private LinkCheckerInfo createLinkCheckerInfo(String link) {
-		LinkCheckerInfo linkCheckerInfo = new LinkCheckerInfo(link);
-		linkCheckerInfo.addLinkNotVisited(new LinkRelation(null, "https://goglopex.com/"));
-		linkCheckerInfo.setWishedDepth(2);
-		this.checkLinksNotVisited(linkCheckerInfo);
-		return linkCheckerInfo;
+	private LinkCheckerReport createLinkCheckerInfo(String link) {
+		LinkCheckerReport report = new LinkCheckerReport(link);
+		this.timer.startTimer();
+		
+		//**** DELETE
+		report.addLinkNotVisited(new LinkRelation(null, "https://goglopex.com/"));
+		report.getStatistics().setWishedDepth(2);
+		//*******
+		
+		this.checkLinksNotVisited(report);
+		this.timer.stopTimer();
+		this.fillLinkCheckerReportStatistics(report);
+		
+		return report;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkLinksNotVisited(LinkCheckerInfo linkCheckerInfo) {
-		ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) linkCheckerInfo.getLinksNotVisited();
+	private void checkLinksNotVisited(LinkCheckerReport report) {
+		ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) report.getLinksNotVisited();
 		List<LinkRelation> copyOfLinksNotVisited = (List<LinkRelation>) linksNotVisited.clone();
 
 		for (LinkRelation linkNotVisited : copyOfLinksNotVisited) {
-			this.fillLinkCheckerInfo(linkCheckerInfo, linkNotVisited);
+			report.addNumInteraction();
+			this.fillLinkCheckerInfo(report, linkNotVisited);
 		}
 
 		// Validation Call + depth;
-		if (linkCheckerInfo.getLinksNotVisited().size() > 0 && !linkCheckerInfo.reachWishedDepth()) {
-			linkCheckerInfo.addCurrentDepth();
-			this.checkLinksNotVisited(linkCheckerInfo);
+		if (report.getLinksNotVisited().size() > 0 && !report.reachWishedDepth()) {
+			report.addCurrentDepth();
+			this.checkLinksNotVisited(report);
 		}
 
 	}
 
-	private void fillLinkCheckerInfo(LinkCheckerInfo linkCheckerInfo, LinkRelation linkRelation) {
+	private void fillLinkCheckerInfo(LinkCheckerReport report, LinkRelation linkRelation) {
 		String link = linkRelation.getTo();
-		link = this.getCorrectLink(link, linkCheckerInfo.getFirstLink());
+		link = this.getCorrectLink(link, report.getFirstLink());
 		linkRelation.setTo(link);
 
-		if (LinkValidation.isValid(link)) {
-
-			boolean existLink = MapUtils.existObjectInMap(linkCheckerInfo.getLinksVisited(), link);
+		if (LinkValidation.canCheck(link)) {
+			
+			report.addNumRequest();
+			boolean existLink = MapUtils.existObjectInMap(report.getLinksVisited(), link);
 
 			if (!existLink) {
-				this.newLinkStrategy(linkCheckerInfo, linkRelation);
+				this.newLinkStrategy(report, linkRelation);
 			} else {
-				this.visitedLinkStrategy(linkCheckerInfo, link);
+				this.visitedLinkStrategy(report, link);
 			}
 
 		} else {
-			linkCheckerInfo.addLinkNotValid(linkRelation);
-			linkCheckerInfo.removeLinkNotVisited(linkRelation);
+			report.addLinkCanNotChecked(linkRelation);
+			report.removeLinkNotVisited(linkRelation);
 		}
 
 	}
@@ -100,26 +113,26 @@ public class LinkCheckerService {
 		}
 	}
 
-	private void visitedLinkStrategy(LinkCheckerInfo linkCheckerInfo, String link) {
-		LinkInfo linkInfo = MapUtils.getMapValue(linkCheckerInfo.getLinksVisited(), link);
+	private void visitedLinkStrategy(LinkCheckerReport report, String link) {
+		LinkInfo linkInfo = MapUtils.getMapValue(report.getLinksVisited(), link);
 		this.addLinkEntry(linkInfo, link);
 	}
 
-	private void newLinkStrategy(LinkCheckerInfo linkCheckerInfo, LinkRelation linkRelation) {
+	private void newLinkStrategy(LinkCheckerReport report, LinkRelation linkRelation) {
 		String link = linkRelation.getTo();
 		LinkInfo linkInfo = this.getLinkInfo(link);
 		this.addLinkEntry(linkInfo, linkRelation.getFrom());
 
 		if (linkInfo.isGood()) {
-			linkInfo.setDepth(linkCheckerInfo.getCurrentDepth());
+			linkInfo.setDepth(report.getStatistics().getCurrentDepth());
 
-			if (link.contains(linkCheckerInfo.getFirstLink()) && !linkCheckerInfo.reachWishedDepth()) {
-				linkCheckerInfo.addLinksNotVisited(link, linkInfo.getExits());
+			if (link.contains(report.getFirstLink()) && !report.reachWishedDepth()) {
+				report.addLinksNotVisited(link, linkInfo.getExits());
 			}
 		}
 
-		linkCheckerInfo.addLinkVisited(link, linkInfo);
-		linkCheckerInfo.removeLinkNotVisited(linkRelation);
+		report.addLinkVisited(link, linkInfo);
+		report.removeLinkNotVisited(linkRelation);
 	}
 
 	private LinkInfo getLinkInfo(String link) {
@@ -181,6 +194,16 @@ public class LinkCheckerService {
 		}
 
 		return document;
+	}
+	
+	
+	public void fillLinkCheckerReportStatistics(LinkCheckerReport report) {
+		report.setExecutionDuration(this.timer.getTime());
+		report.countNumLinksVisited();
+		report.countNumLinksNotVisited();
+		report.countNumLinksCanNotChecked();
+		report.countNumGoodLinks();
+		report.countNumBadLinks();
 	}
 
 }
