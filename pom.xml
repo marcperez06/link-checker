@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 
 	<name>link-checker</name>
-	<description>Useful java utilities that I use in different projects</description>
+	<description>Library that allow get a report about link status inside webpages without authorization</description>
 	<url>http://maven.apache.org</url>
 
 	<licenses>
