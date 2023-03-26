@@ -45,12 +45,6 @@ public class LinkCheckerService {
 	private LinkCheckerReport createLinkCheckerInfo(String link) {
 		LinkCheckerReport report = new LinkCheckerReport(link);
 		this.timer.startTimer();
-		
-		//**** DELETE
-		report.addLinkNotVisited(new LinkRelation(null, "https://goglopex.com/"));
-		report.getStatistics().setWishedDepth(2);
-		//*******
-		
 		this.checkLinksNotVisited(report);
 		this.timer.stopTimer();
 		this.fillLinkCheckerReportStatistics(report);

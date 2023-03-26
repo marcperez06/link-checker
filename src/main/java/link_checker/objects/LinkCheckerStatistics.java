@@ -22,7 +22,7 @@ public class LinkCheckerStatistics {
 		this.numGoodLinks = 0;
 		this.numBadLinks = 0;
 		this.currentDepth = 0;
-		this.wishedDepth = 0;
+		this.wishedDepth = 1;
 		this.executionDuration = 0;
 	}
 	
