@@ -1,4 +1,4 @@
-package link_checker.objects;
+package link_checker.report;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,17 +7,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
-import link_checker.enums.Status;
+import link_checker.report.configuration.LinkCheckerConfiguration;
+import link_checker.report.link.LinkInfo;
+import link_checker.report.link.LinkRelation;
+import link_checker.report.link.comparator.LinkInfoComparator;
+import link_checker.report.link.enums.Status;
 
 public class LinkCheckerReport {
 	
 	private String firstLink;
+	private List<String> summaryBadLinks;
 	private LinkCheckerStatistics statistics;
 	private Map<String, LinkInfo> linksVisited;
 	private List<LinkRelation> linksNotVisited;
 	private List<LinkRelation> linksCanNotChecked;
 	private List<String> summaryGoodLinks;
-	private List<String> summaryBadLinks;
+	private LinkCheckerConfiguration configuration;
+	
 	
 	public LinkCheckerReport(String link) {
 		this.firstLink = link;
@@ -27,6 +33,7 @@ public class LinkCheckerReport {
 		this.linksCanNotChecked = new ArrayList<LinkRelation>();
 		this.summaryGoodLinks = new ArrayList<String>();
 		this.summaryBadLinks = new ArrayList<String>();
+		this.configuration = new LinkCheckerConfiguration();
 		ListUtils.addObjectInList(this.linksNotVisited, new LinkRelation(null, link));
 	}
 	
@@ -117,6 +124,14 @@ public class LinkCheckerReport {
 		ListUtils.addObjectInList(this.summaryBadLinks, link);
 	}
 	
+	public synchronized void setConfiguration(LinkCheckerConfiguration configuration) {
+		this.configuration = configuration;
+	}
+	
+	public synchronized LinkCheckerConfiguration getConfiguration() {
+		return this.configuration;
+	}
+	
 	// ---------------------- STATISTICS ACTIONS ------------------------------
 	
 	public synchronized void addNumInteraction() {
@@ -129,10 +144,6 @@ public class LinkCheckerReport {
 	
 	public synchronized void addCurrentDepth() {
 		this.statistics.addCurrentDepth();
-	}
-	
-	public boolean reachWishedDepth() {
-		return this.statistics.reachWishedDepth();
 	}
 	
 	public synchronized int countNumLinksVisited() {
@@ -166,7 +177,15 @@ public class LinkCheckerReport {
 	}
 	
 	public synchronized void setExecutionDuration(long duration) {
-		this.statistics.setExecutionDuration(duration);
+		this.statistics.setExecutionDurationInSeconds(duration);
+	}
+	
+	// -------------- OTHER METHODS -------------------------------
+	
+	public void sortLinksVisited() {
+		if (this.configuration.isSortEnabled()) {
+			this.linksVisited = MapUtils.sortMapByValue(this.linksVisited, new LinkInfoComparator());
+		}
 	}
 
 }

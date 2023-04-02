@@ -1,10 +1,10 @@
-package link_checker.objects;
+package link_checker.report.link;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
-import link_checker.enums.Status;
+import link_checker.report.link.enums.Status;
 
 public class LinkInfo {
 	

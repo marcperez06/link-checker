@@ -1,4 +1,4 @@
-package link_checker.objects;
+package link_checker.report.link;
 
 public class LinkRelation {
 	

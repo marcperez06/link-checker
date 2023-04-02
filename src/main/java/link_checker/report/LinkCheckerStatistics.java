@@ -1,4 +1,4 @@
-package link_checker.objects;
+package link_checker.report;
 
 public class LinkCheckerStatistics {
 	
@@ -10,8 +10,7 @@ public class LinkCheckerStatistics {
 	private int numGoodLinks;
 	private int numBadLinks;
 	private int currentDepth;
-	private int wishedDepth;
-	private long executionDuration;
+	private long executionDurationInSeconds;
 	
 	public LinkCheckerStatistics() {
 		this.numInteractions = 0;
@@ -22,8 +21,7 @@ public class LinkCheckerStatistics {
 		this.numGoodLinks = 0;
 		this.numBadLinks = 0;
 		this.currentDepth = 0;
-		this.wishedDepth = 1;
-		this.executionDuration = 0;
+		this.executionDurationInSeconds = 0;
 	}
 	
 	public synchronized int getNumInteractions() {
@@ -102,24 +100,12 @@ public class LinkCheckerStatistics {
 		this.currentDepth++;
 	}
 	
-	public synchronized int getWishedDepth() {
-		return this.wishedDepth;
+	public synchronized long getExecutionDurationInSeconds() {
+		return this.executionDurationInSeconds;
 	}
 	
-	public synchronized void setWishedDepth(int depth) {
-		this.wishedDepth = depth;
-	}
-	
-	public boolean reachWishedDepth() {
-		return this.currentDepth >= this.wishedDepth;
-	}
-	
-	public synchronized long getExecutionDuration() {
-		return this.executionDuration;
-	}
-	
-	public synchronized void setExecutionDuration(long executionDuration) {
-		this.executionDuration = executionDuration;
+	public synchronized void setExecutionDurationInSeconds(long executionDuration) {
+		this.executionDurationInSeconds = executionDuration;
 	}
 
 }

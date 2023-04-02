@@ -1,4 +1,4 @@
-package link_checker.validation;
+package link_checker.report.link.validation;
 
 import io.github.marcperez06.java_utilities.strings.StringUtils;
 

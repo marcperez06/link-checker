@@ -1,25 +1,30 @@
-package link_checker.services;
+package link_checker.report.services;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import java.util.concurrent.TimeUnit;
 
 import io.github.marcperez06.java_utilities.api.request.Request;
 import io.github.marcperez06.java_utilities.api.request.Response;
 import io.github.marcperez06.java_utilities.api.request.enums.HttpMethodEnum;
 import io.github.marcperez06.java_utilities.api.rest.UnirestClient;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
+import io.github.marcperez06.java_utilities.logger.Logger;
+import io.github.marcperez06.java_utilities.strings.StringUtils;
+import io.github.marcperez06.java_utilities.testdata.DataCollector;
+import io.github.marcperez06.java_utilities.threads.ThreadUtils;
 import io.github.marcperez06.java_utilities.timer.Timer;
 import io.github.marcperez06.java_utilities.uri.UriUtils;
 import io.github.marcperez06.java_utilities.validation.ValidationUtils;
-import link_checker.enums.Status;
-import link_checker.objects.LinkCheckerReport;
-import link_checker.objects.LinkInfo;
-import link_checker.objects.LinkRelation;
-import link_checker.validation.LinkValidation;
+import link_checker.report.LinkCheckerReport;
+import link_checker.report.LinkCheckerStatistics;
+import link_checker.report.configuration.validation.ConfigurationValidation;
+import link_checker.report.link.LinkInfo;
+import link_checker.report.link.LinkRelation;
+import link_checker.report.link.populator.LinkInfoPopulator;
+import link_checker.report.link.validation.LinkValidation;
+import link_checker.report.populator.LinkCheckerReportPopulator;
+import link_checker.report.populator.runnable.LinkCheckerReportPopulateTask;
 
 public class LinkCheckerService {
 
@@ -31,13 +36,16 @@ public class LinkCheckerService {
 	private LinkCheckerService() {
 		this.api = new UnirestClient();
 		this.timer = new Timer();
+		this.api.disableCookieManagement();
+		DataCollector.addData("timer", this.timer);
+		DataCollector.addData("restClient", this.api);
 	}
 
 	public static LinkCheckerService getInstance() {
 		return (instance != null) ? instance : new LinkCheckerService();
 	}
 
-	public static LinkCheckerReport getPageInfo(String link) {
+	public static LinkCheckerReport getReport(String link) {
 		LinkCheckerService service = getInstance();
 		return service.createLinkCheckerInfo(link);
 	}
@@ -48,7 +56,7 @@ public class LinkCheckerService {
 		this.checkLinksNotVisited(report);
 		this.timer.stopTimer();
 		this.fillLinkCheckerReportStatistics(report);
-		
+		report.sortLinksVisited();
 		return report;
 	}
 
@@ -57,13 +65,21 @@ public class LinkCheckerService {
 		ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) report.getLinksNotVisited();
 		List<LinkRelation> copyOfLinksNotVisited = (List<LinkRelation>) linksNotVisited.clone();
 
+		ThreadUtils.createPool(3);
+		
 		for (LinkRelation linkNotVisited : copyOfLinksNotVisited) {
-			report.addNumInteraction();
-			this.fillLinkCheckerInfo(report, linkNotVisited);
+			//report.addNumInteraction();
+			//this.fillLinkCheckerInfo(report, linkNotVisited);
+			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
 		}
+		
+		ThreadUtils.executeAllTask();
+		ThreadUtils.waitUntilExecutionFinish();
+		
+		this.printReportStatusInfo(report);
 
 		// Validation Call + depth;
-		if (report.getLinksNotVisited().size() > 0 && !report.reachWishedDepth()) {
+		if (!ConfigurationValidation.stopReport(report)) {
 			report.addCurrentDepth();
 			this.checkLinksNotVisited(report);
 		}
@@ -120,7 +136,7 @@ public class LinkCheckerService {
 		if (linkInfo.isGood()) {
 			linkInfo.setDepth(report.getStatistics().getCurrentDepth());
 
-			if (link.contains(report.getFirstLink()) && !report.reachWishedDepth()) {
+			if (link.contains(report.getFirstLink())) {
 				report.addLinksNotVisited(link, linkInfo.getExits());
 			}
 		}
@@ -132,19 +148,7 @@ public class LinkCheckerService {
 	private LinkInfo getLinkInfo(String link) {
 		LinkInfo linkInfo = new LinkInfo(link);
 		Response<Void> response = this.getUrlResponse(link);
-
-		if (response.isSuccess()) {
-
-			Document document = this.getHtmlPage(response.getOriginalBody(), link);
-
-			if (document != null) {
-				this.fillLinkInfoForGoodStatus(linkInfo, document);
-			}
-
-		} else if (response.isClientError()) {
-			this.fillLinkInfoForBadStatus(linkInfo);
-		}
-
+		LinkInfoPopulator.populate(linkInfo, response);
 		return linkInfo;
 	}
 
@@ -160,44 +164,25 @@ public class LinkCheckerService {
 
 		return response;
 	}
-
-	private void fillLinkInfoForGoodStatus(LinkInfo linkInfo, Document document) {
-		Elements linkElements = document.select("a");
-		List<String> links = linkElements.eachAttr("href");
-
-		for (String exit : links) {
-			linkInfo.addExit(exit);
-		}
-
-		linkInfo.setStatus(Status.OK);
-	}
-
-	private void fillLinkInfoForBadStatus(LinkInfo linkInfo) {
-		linkInfo.setStatus(Status.NOT_FOUND);
-		linkInfo.setExits(null);
-	}
-
-	private Document getHtmlPage(String responseBody, String link) {
-		Document document = null;
-
-		try {
-			document = Jsoup.parse(responseBody);
-		} catch (Exception e) {
-			System.out.println("Can not parse the page: " + link);
-			e.printStackTrace();
-		}
-
-		return document;
-	}
-	
 	
 	public void fillLinkCheckerReportStatistics(LinkCheckerReport report) {
-		report.setExecutionDuration(this.timer.getTime());
+		report.setExecutionDuration(this.timer.getTime(TimeUnit.SECONDS));
 		report.countNumLinksVisited();
 		report.countNumLinksNotVisited();
 		report.countNumLinksCanNotChecked();
 		report.countNumGoodLinks();
 		report.countNumBadLinks();
+	}
+	
+	private void printReportStatusInfo(LinkCheckerReport report) {
+		LinkCheckerReportPopulator.fillLinkCheckerReportStatistics(report);
+		LinkCheckerStatistics statistics = report.getStatistics();
+		String reportStatus = "------------ Current depth: %s | Links visited: %s | Links not visited: %s ----------";
+		String currentDepth = String.valueOf(statistics.getCurrentDepth());
+		String linksVisited = String.valueOf(statistics.getNumLinksVisited());
+		String linksNotVisited = String.valueOf(statistics.getNumLinksNotVisited());
+		reportStatus = StringUtils.format(reportStatus, currentDepth, linksVisited, linksNotVisited);
+		Logger.println(reportStatus);
 	}
 
 }
