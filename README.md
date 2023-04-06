@@ -17,7 +17,7 @@ For use link checker dependency follow this steps
 implementation 'io.github.marcperez06:link-checker:0.0.1'
 ```
 
-2. Call the method getReport() of LinkCheckerService
+2. Call the method `getReport()` of LinkCheckerService
 - Using default configuration, using the default properties file (described on Properties section) or with default configuration
 ```
 
