@@ -37,6 +37,11 @@ public class LinkCheckerReport {
 		ListUtils.addObjectInList(this.linksNotVisited, new LinkRelation(null, link));
 	}
 	
+	public LinkCheckerReport(String link, LinkCheckerConfiguration configruation) {
+		this(link);
+		this.configuration = configruation;
+	}
+	
 	public synchronized String getFirstLink() {
 		return this.firstLink;
 	}

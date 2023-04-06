@@ -18,6 +18,8 @@ import io.github.marcperez06.java_utilities.uri.UriUtils;
 import io.github.marcperez06.java_utilities.validation.ValidationUtils;
 import link_checker.report.LinkCheckerReport;
 import link_checker.report.LinkCheckerStatistics;
+import link_checker.report.configuration.LinkCheckerConfiguration;
+import link_checker.report.configuration.factory.LinkCheckerConfigurationFactory;
 import link_checker.report.configuration.validation.ConfigurationValidation;
 import link_checker.report.link.LinkInfo;
 import link_checker.report.link.LinkRelation;
@@ -46,12 +48,22 @@ public class LinkCheckerService {
 	}
 
 	public static LinkCheckerReport getReport(String link) {
+		LinkCheckerConfiguration configuration = LinkCheckerConfigurationFactory.createConfiguration();
+		return getReport(link, configuration);
+	}
+	
+	public static LinkCheckerReport getReport(String link, String propertiesPath) {
+		LinkCheckerConfiguration configuration = LinkCheckerConfigurationFactory.createConfiguration(propertiesPath);
+		return getReport(link, configuration);
+	}
+	
+	public static LinkCheckerReport getReport(String link, LinkCheckerConfiguration configuration) {
 		LinkCheckerService service = getInstance();
-		return service.createLinkCheckerInfo(link);
+		return service.createLinkCheckerInfo(link, configuration);
 	}
 
-	private LinkCheckerReport createLinkCheckerInfo(String link) {
-		LinkCheckerReport report = new LinkCheckerReport(link);
+	private LinkCheckerReport createLinkCheckerInfo(String link, LinkCheckerConfiguration configuration) {
+		LinkCheckerReport report = new LinkCheckerReport(link, configuration);
 		this.timer.startTimer();
 		this.checkLinksNotVisited(report);
 		this.timer.stopTimer();
@@ -65,15 +77,25 @@ public class LinkCheckerService {
 		ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) report.getLinksNotVisited();
 		List<LinkRelation> copyOfLinksNotVisited = (List<LinkRelation>) linksNotVisited.clone();
 
-		ThreadUtils.createPool(3);
+		ThreadUtils.createPool(report.getConfiguration().getNumThreads());
 		
+		boolean stopReport = false;
+		for (int i = 0; i < copyOfLinksNotVisited.size() && !stopReport; i++) {
+			LinkRelation linkNotVisited = copyOfLinksNotVisited.get(i);
+			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
+			stopReport = ConfigurationValidation.stopReport(report);
+			if (i % report.getConfiguration().getNumThreads() == 0) {
+				ThreadUtils.executeAllTask();
+			}
+		}
+		/*
 		for (LinkRelation linkNotVisited : copyOfLinksNotVisited) {
 			//report.addNumInteraction();
 			//this.fillLinkCheckerInfo(report, linkNotVisited);
 			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
 		}
-		
-		ThreadUtils.executeAllTask();
+		*/
+		//ThreadUtils.executeAllTask();
 		ThreadUtils.waitUntilExecutionFinish();
 		
 		this.printReportStatusInfo(report);

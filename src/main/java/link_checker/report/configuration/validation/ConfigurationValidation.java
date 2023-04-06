@@ -8,19 +8,9 @@ public class ConfigurationValidation {
 	
 	public static boolean stopReport(LinkCheckerReport report) {
 		boolean stopReport = !hasLinksToVisit(report);
-		
-		if (!stopReport) {
-			stopReport = reachWishedDepth(report);
-		}
-		
-		if (!stopReport) {
-			stopReport &= reachMaxInteractions(report);
-		}
-		
-		if (!stopReport) {
-			stopReport &= reachMaxRequests(report);
-		}
-		
+		stopReport |= reachWishedDepth(report);
+		stopReport |= reachMaxInteractions(report);
+		stopReport |= reachMaxRequests(report);		
 		/*
 		if (!stopReport) {
 			stopReport &= reachMaxExecutionDurationInMilliseconds(report);
@@ -36,24 +26,24 @@ public class ConfigurationValidation {
 	
 	public static boolean reachWishedDepth(LinkCheckerReport report) {
 		boolean stopReport = false;
-		if (isValidNumber(report.getConfiguration().getMaxDepth())) {
-			stopReport = report.getStatistics().getCurrentDepth() >= report.getConfiguration().getMaxDepth();
+		if (isValidNumber(report.getConfiguration().getMinDepth())) {
+			stopReport = report.getStatistics().getCurrentDepth() >= report.getConfiguration().getMinDepth();
 		}
 		return stopReport;
 	}
 	
 	public static boolean reachMaxInteractions(LinkCheckerReport report) {
 		boolean stopReport = false;
-		if (isValidNumber(report.getConfiguration().getMaxInteractions())) {
-			stopReport = report.getStatistics().getNumInteractions() >= report.getConfiguration().getMaxInteractions();
+		if (isValidNumber(report.getConfiguration().getMinInteractions())) {
+			stopReport = report.getStatistics().getNumInteractions() >= report.getConfiguration().getMinInteractions();
 		}
 		return stopReport;
 	}
 	
 	public static boolean reachMaxRequests(LinkCheckerReport report) {
 		boolean stopReport = false;
-		if (isValidNumber(report.getConfiguration().getMaxRequests())) {
-			stopReport = report.getStatistics().getNumRequests() >= report.getConfiguration().getMaxRequests();
+		if (isValidNumber(report.getConfiguration().getMinRequests())) {
+			stopReport = report.getStatistics().getNumRequests() >= report.getConfiguration().getMinRequests();
 		}
 		return stopReport;
 	}

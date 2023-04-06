@@ -2,44 +2,58 @@ package link_checker.report.configuration;
 
 public class LinkCheckerConfiguration {
 	
-	private Integer maxDepth;
-	private Integer maxRequests;
-	private Integer maxInteractions;
+	private Integer minDepth;
+	private Integer minRequests;
+	private Integer minInteractions;
 	private boolean sortNotFoundFirst;
+	public int numThreads;
 	
 	public LinkCheckerConfiguration() {
-		this.maxDepth = Integer.valueOf(1);
-		this.maxRequests = null;
-		this.maxInteractions = null;
+		this.minDepth = null;
+		this.minRequests = null;
+		this.minInteractions = null;
 		this.sortNotFoundFirst = true;
+		this.numThreads = 1;
 	}
 	
-	public Integer getMaxDepth() {
-		return this.maxDepth;
+	public Integer getMinDepth() {
+		return this.minDepth;
 	}
 
-	public void setMaxDepth(Integer maxDepth) {
-		this.maxDepth = maxDepth;
+	public void setMinDepth(Integer maxDepth) {
+		this.minDepth = maxDepth;
 	}
 
-	public Integer getMaxRequests() {
-		return this.maxRequests;
+	public Integer getMinRequests() {
+		return this.minRequests;
 	}
 
-	public void setMaxRequests(Integer maxRequests) {
-		this.maxRequests = maxRequests;
+	public void setMinRequests(Integer maxRequests) {
+		this.minRequests = maxRequests;
 	}
 
-	public Integer getMaxInteractions() {
-		return this.maxInteractions;
+	public Integer getMinInteractions() {
+		return this.minInteractions;
 	}
 
-	public void setMaxInteractions(Integer maxInteractions) {
-		this.maxInteractions = maxInteractions;
+	public void setMinInteractions(Integer maxInteractions) {
+		this.minInteractions = maxInteractions;
 	}
 
 	public boolean isSortEnabled() {
 		return this.sortNotFoundFirst;
+	}
+	
+	public void setSortNotFoundFirst(boolean sortNotFoundFirst) {
+		this.sortNotFoundFirst = sortNotFoundFirst;
+	}
+	
+	public int getNumThreads() {
+		return this.numThreads;
+	}
+
+	public void setNumThreads(int numThreads) {
+		this.numThreads = numThreads;
 	}
 
 }
