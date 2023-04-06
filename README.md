@@ -47,9 +47,9 @@ The default path for the properties is under project directory, following the pa
 ''' 
 
 - Properties Example:
-'''
-link.checker.min.depth.enabled=true\n
-link.checker.min.depth=1\n
+```
+link.checker.min.depth.enabled=true
+link.checker.min.depth=1
 
 link.checker.min.interactions.enabled=true
 link.checker.min.interactions=100
@@ -59,7 +59,7 @@ link.checker.min.requests=100
 
 link.checker.num.threads=3
 link.checker.sort.not.found.first=true
-'''
+```
 
 ---- Examples ----
 Can find different examples on unit test in github [https://github.com/marcperez06/link-checker/tree/master/src/test/java/link_checker]
