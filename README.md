@@ -1,8 +1,12 @@
----- How to use link checker ----
+# Important
+
+- This library only works for static links, if the link request credentials for access to new links, it will not work
+
+## How to use link checker
 
 For use link checker dependency follow this steps
 
-1. Include link-checker dependency on your project (https://mvnrepository.com/artifact/io.github.marcperez06/link-checker)
++ Include link-checker dependency on your project (https://mvnrepository.com/artifact/io.github.marcperez06/link-checker)
 - For Maven:
 ```
 <dependency>
@@ -17,32 +21,68 @@ For use link checker dependency follow this steps
 implementation 'io.github.marcperez06:link-checker:0.0.1'
 ```
 
-2. Call the method `getReport()` of LinkCheckerService
-- Using default configuration, using the default properties file (described on Properties section) or with default configuration
+2. Call method `getReport()` or `getReports()` of LinkCheckerService
+2.1 `getReport()`
+- Using default configuration, using the default properties file (described on Properties section)
 ```
-
+String url = "base url to check";
+LinkCheckerReport report = LinkCheckerService.getReport(url);
 ```
 
 - Using configuration from different properties file
 ```
+String propertiesPath = "full properties path";
+String url = "base url to check";
+LinkCheckerReport report = LinkCheckerService.getReport(url, propertiesPath);
 
+```
+
+- Using default configuration from builder
+```
+String url = "base url to check";
+LinkCheckerConfiguration configuration = new LinkCheckerConfigurationBuilder().build();
+LinkCheckerReport report = LinkCheckerService.getReport(url, configuration);
 ```
 
 - Creating an specific configuration using LinkCheckerConfigurationBuilder
 ```
+String url = "base url to check";
+LinkCheckerConfigurationBuilder configurationBuilder = new LinkCheckerConfigurationBuilder();
+configurationBuilder.minDepth(1);
+configurationBuilder.numThreads(2);
+configurationBuilder.minInteractions(10);
+configurationBuilder.minRequests(5);
+configurationBuilder.sortNotFoundFirst(false);
+LinkCheckerReport report = LinkCheckerService.getReport(url, configurationBuilder.build());
 
 ```
 
-** Default configuration
-min depth: 1
-sort not found firt: true
-num threads: 1
+2.2 `getReports()`
+- You can use the same methods on the examples above, but instead of use one url, use a List<String> as param
+```
+List<String> urls = new ArrayList<String>();
+urls.add("https://www.nato.int/nato-welcome/index_es.html");
+urls.add("https://www.fao.org/home/es");
+LinkCheckerConfigurationBuilder configurationBuilder = new LinkCheckerConfigurationBuilder();
+configurationBuilder.minDepth(1);
+configurationBuilder.numThreads(3);
+configurationBuilder.minRequests(5);
+configurationBuilder.sortNotFoundFirst(false);
+List<LinkCheckerReport> reports = LinkCheckerService.getReports(urls, configurationBuilder.build());
+```
 
----- Properties ----
+* Default configuration
+```
+min depth: 1
+sort not found first: true
+num threads: 1
+```
+
+## Properties
 
 The properties configure when report will stop at reach the minimal number specified on each property enabled,
 also defines the number of threads used for parallelization and if want the report of links visited sorted 
-with the results NOT_FOUND in the first positions of report under "linksVisited" property
+with the results NOT_FOUND in the first positions of report under `linksVisited` property
 
 The default path for the properties is under project directory, following the path 
 
@@ -66,11 +106,63 @@ link.checker.num.threads=3
 link.checker.sort.not.found.first=true
 ```
 
----- Examples ----
+## Example of Report
+
+This Report have some info deleted for reduce his size
+```
+{
+  "firstLink": "https://www.fao.org/home/es",
+  "summaryBadLinks": [],
+  "statistics": {
+    "numInteractions": 1,
+    "numRequests": 1,
+    "numLinksVisited": 1,
+    "numLinksNotVisited": 92,
+    "numLinksCanNotChecked": 0,
+    "numGoodLinks": 1,
+    "numBadLinks": 0,
+    "currentDepth": 0,
+    "executionDurationInSeconds": 1
+  },
+  "linksVisited": {
+    "https://www.fao.org/home/es": {
+      "link": "https://www.fao.org/home/es",
+      "status": "OK",
+      "depth": 0,
+      "entries": [],
+      "exits": [
+        "http://www.fao.org/home/es",
+        "https://www.fao.org/contact-us/terms/es/"
+      ]
+    }
+  },
+  "linksNotVisited": [
+    {
+      "from": "https://www.fao.org/home/es",
+      "to": "http://www.fao.org/home/es"
+    },
+    {
+      "from": "https://www.fao.org/home/es",
+      "to": "http://www.fao.org/about/en/"
+    }
+  ],
+  "linksCanNotChecked": [],
+  "summaryGoodLinks": [
+    "https://www.fao.org/home/es"
+  ],
+  "configuration": {
+    "minDepth": 0,
+    "sortNotFoundFirst": true,
+    "numThreads": 1
+  }
+}
+```
+
+## Examples
 Can find different examples on unit test in github https://github.com/marcperez06/link-checker/tree/master/src/test/java/link_checker
 
---- Github Project ----
+## Github Project
 https://github.com/marcperez06/link-checker
 
----- Author ----
+###### Author
 Marc Pérez Rodríguez

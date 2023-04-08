@@ -22,8 +22,10 @@ public class LinkInfoPopulator {
 				fillLinkInfoForGoodStatus(linkInfo, document);
 			}
 
-		} else if (response.isClientError()) {
+		} else if (response.isNotFound()) {
 			fillLinkInfoForNotFoundStatus(linkInfo);
+		} else if (response.isForbidden()) {
+			fillLinkInfoForForbiddenStatus(linkInfo);
 		} else if (response.statusCodeIs(999)) {
 			fillLinkInfoForRequestDeniedStatus(linkInfo);
 		} else {
@@ -45,6 +47,10 @@ public class LinkInfoPopulator {
 
 	private static void fillLinkInfoForNotFoundStatus(LinkInfo linkInfo) {
 		fillLinkInfoForBadStatus(linkInfo, Status.NOT_FOUND);	
+	}
+	
+	private static void fillLinkInfoForForbiddenStatus(LinkInfo linkInfo) {
+		fillLinkInfoForBadStatus(linkInfo, Status.FORBIDDEN);	
 	}
 	
 	private static void fillLinkInfoForRequestDeniedStatus(LinkInfo linkInfo) {

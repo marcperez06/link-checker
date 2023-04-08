@@ -44,7 +44,36 @@ public class LinkCheckerService {
 	}
 
 	public static LinkCheckerService getInstance() {
-		return (instance != null) ? instance : new LinkCheckerService();
+		if (instance == null) {
+			instance = new LinkCheckerService();
+		}
+		return instance;
+	}
+	
+	public static List<LinkCheckerReport> getReports(List<String> links) {
+		List<LinkCheckerReport> reports = new ArrayList<LinkCheckerReport>();
+		LinkCheckerConfiguration configuration = LinkCheckerConfigurationFactory.createConfiguration();
+		for (String link : links) {
+			reports.add(getReport(link, configuration));
+		}
+		return reports;
+	}
+	
+	public static List<LinkCheckerReport> getReports(List<String> links, String propertiesPath) {
+		List<LinkCheckerReport> reports = new ArrayList<LinkCheckerReport>();
+		LinkCheckerConfiguration configuration = LinkCheckerConfigurationFactory.createConfiguration(propertiesPath);
+		for (String link : links) {
+			reports.add(getReport(link, configuration));
+		}
+		return reports;
+	}
+	
+	public static List<LinkCheckerReport> getReports(List<String> links, LinkCheckerConfiguration configuration) {
+		List<LinkCheckerReport> reports = new ArrayList<LinkCheckerReport>();
+		for (String link : links) {
+			reports.add(getReport(link, configuration));
+		}
+		return reports;
 	}
 
 	public static LinkCheckerReport getReport(String link) {
@@ -83,19 +112,12 @@ public class LinkCheckerService {
 		for (int i = 0; i < copyOfLinksNotVisited.size() && !stopReport; i++) {
 			LinkRelation linkNotVisited = copyOfLinksNotVisited.get(i);
 			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
-			stopReport = ConfigurationValidation.stopReport(report);
+			stopReport = ConfigurationValidation.stopReportWithoutCheckDepth(report);
 			if (i % report.getConfiguration().getNumThreads() == 0) {
 				ThreadUtils.executeAllTask();
 			}
 		}
-		/*
-		for (LinkRelation linkNotVisited : copyOfLinksNotVisited) {
-			//report.addNumInteraction();
-			//this.fillLinkCheckerInfo(report, linkNotVisited);
-			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
-		}
-		*/
-		//ThreadUtils.executeAllTask();
+		
 		ThreadUtils.waitUntilExecutionFinish();
 		
 		this.printReportStatusInfo(report);
@@ -199,11 +221,18 @@ public class LinkCheckerService {
 	private void printReportStatusInfo(LinkCheckerReport report) {
 		LinkCheckerReportPopulator.fillLinkCheckerReportStatistics(report);
 		LinkCheckerStatistics statistics = report.getStatistics();
-		String reportStatus = "------------ Current depth: %s | Links visited: %s | Links not visited: %s ----------";
 		String currentDepth = String.valueOf(statistics.getCurrentDepth());
 		String linksVisited = String.valueOf(statistics.getNumLinksVisited());
 		String linksNotVisited = String.valueOf(statistics.getNumLinksNotVisited());
-		reportStatus = StringUtils.format(reportStatus, currentDepth, linksVisited, linksNotVisited);
+		String interactions = String.valueOf(statistics.getNumInteractions());
+		String requets = String.valueOf(statistics.getNumRequests());
+		
+		String reportStatus = "------------ Current depth: %s | Links visited: %s | Links not visited: %s |";
+		reportStatus += "Intractions: %s | Requests: %s ----------";
+		
+		reportStatus = StringUtils.format(reportStatus, currentDepth, linksVisited, 
+												linksNotVisited, interactions, requets);
+		
 		Logger.println(reportStatus);
 	}
 
