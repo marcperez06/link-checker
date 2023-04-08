@@ -1,6 +1,7 @@
 # Important
 
 - This library only works for static links, if the link request credentials for access to new links, it will not work
+- This library only get future links to visit from the pages that share the domain name of first link
 
 ## How to use link checker
 
