@@ -22,7 +22,7 @@ For use link checker dependency follow this steps
 implementation 'io.github.marcperez06:link-checker:0.0.2'
 ```
 
-2. Call method `getReport()` or `getReports()` of LinkCheckerService
+2. Call method `getReport()` or `getReports()` of LinkCheckerService  
 2.1 `getReport()`
 - Using default configuration, using the default properties file (described on Properties section)
 ```

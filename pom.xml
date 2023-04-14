@@ -164,6 +164,22 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<packageName>io.github.marcperez06.link_checker</packageName>
+						</manifest>
+						<manifestEntries>
+							<Created-By>Marc Perez Rodriguez</Created-By>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 
 	</build>

@@ -92,7 +92,7 @@ public class LinkCheckerService {
 	}
 
 	private LinkCheckerReport createLinkCheckerInfo(String link, LinkCheckerConfiguration configuration) {
-		LinkCheckerReport report = new LinkCheckerReport(link, configuration);
+		LinkCheckerReport report = new LinkCheckerReport(link.trim(), configuration);
 		this.timer.startTimer();
 		this.checkLinksNotVisited(report);
 		this.timer.stopTimer();
@@ -227,7 +227,7 @@ public class LinkCheckerService {
 		String interactions = String.valueOf(statistics.getNumInteractions());
 		String requets = String.valueOf(statistics.getNumRequests());
 		
-		String reportStatus = "------------ Current depth: %s | Links visited: %s | Links not visited: %s |";
+		String reportStatus = "------------ Current depth: %s | Links visited: %s | Links not visited: %s | ";
 		reportStatus += "Intractions: %s | Requests: %s ----------";
 		
 		reportStatus = StringUtils.format(reportStatus, currentDepth, linksVisited, 
