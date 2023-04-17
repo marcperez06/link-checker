@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		<utilities.version>0.0.9</utilities.version>
+		<utilities.version>0.1.0</utilities.version>
 		<jsoup.version>1.15.4</jsoup.version>
 	</properties>
 
