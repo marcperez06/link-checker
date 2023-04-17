@@ -3,7 +3,7 @@
 
 	<groupId>io.github.marcperez06</groupId>
 	<artifactId>link-checker</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>link-checker</name>
@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		<utilities.version>0.0.8</utilities.version>
+		<utilities.version>0.0.9</utilities.version>
 		<jsoup.version>1.15.4</jsoup.version>
 	</properties>
 
@@ -167,18 +167,35 @@
 			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<packageName>io.github.marcperez06.link_checker</packageName>
-						</manifest>
-						<manifestEntries>
-							<Created-By>Marc Perez Rodriguez</Created-By>
-						</manifestEntries>
-					</archive>
-				</configuration>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<finalName>${project.artifactId}</finalName>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>io.github.marcperez06.link_checker.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 

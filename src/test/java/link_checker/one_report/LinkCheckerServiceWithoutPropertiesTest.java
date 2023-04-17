@@ -3,9 +3,9 @@ package link_checker.one_report;
 import org.junit.Before;
 import org.junit.Test;
 
-import link_checker.information.Paths;
-import link_checker.report.LinkCheckerReport;
-import link_checker.report.services.LinkCheckerService;
+import io.github.marcperez06.link_checker.information.Paths;
+import io.github.marcperez06.link_checker.report.LinkCheckerReport;
+import io.github.marcperez06.link_checker.report.services.LinkCheckerService;
 
 public class LinkCheckerServiceWithoutPropertiesTest {
 	

@@ -6,9 +6,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import link_checker.report.LinkCheckerReport;
-import link_checker.report.configuration.builder.LinkCheckerConfigurationBuilder;
-import link_checker.report.services.LinkCheckerService;
+import io.github.marcperez06.link_checker.report.LinkCheckerReport;
+import io.github.marcperez06.link_checker.report.configuration.builder.LinkCheckerConfigurationBuilder;
+import io.github.marcperez06.link_checker.report.services.LinkCheckerService;
 
 public class LinkCheckerServiceMultipleReportsTest {
 	

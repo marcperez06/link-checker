@@ -3,10 +3,10 @@ package link_checker.one_report;
 import org.junit.Before;
 import org.junit.Test;
 
-import link_checker.report.LinkCheckerReport;
-import link_checker.report.configuration.LinkCheckerConfiguration;
-import link_checker.report.configuration.builder.LinkCheckerConfigurationBuilder;
-import link_checker.report.services.LinkCheckerService;
+import io.github.marcperez06.link_checker.report.LinkCheckerReport;
+import io.github.marcperez06.link_checker.report.configuration.LinkCheckerConfiguration;
+import io.github.marcperez06.link_checker.report.configuration.builder.LinkCheckerConfigurationBuilder;
+import io.github.marcperez06.link_checker.report.services.LinkCheckerService;
 
 public class LinkCheckerServiceWithDefaultConfigurationTest {
 	
