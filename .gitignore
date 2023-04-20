@@ -1,4 +1,5 @@
 /target/
+!/target/link-checker.jar
 /dependency-reduced-pom.xml
 /resources/maven_settings/
 /resources/gpg/
