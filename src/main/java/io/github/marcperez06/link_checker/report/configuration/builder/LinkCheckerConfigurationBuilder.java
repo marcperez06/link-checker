@@ -15,12 +15,18 @@ public class LinkCheckerConfigurationBuilder {
     private boolean sortNotFoundFirst;
 
     private int numThreads;
+    
+    private String outputReportPath;
+    
+    private String baseReportName;
 
     public LinkCheckerConfigurationBuilder() {
         this.buildedObject = null;
         this.minDepth = Integer.valueOf(1);
         this.sortNotFoundFirst = true;
         this.numThreads = 1;
+        this.outputReportPath = null;
+        this.baseReportName = "report";
     }
 
     public Integer minDepth() {
@@ -67,6 +73,24 @@ public class LinkCheckerConfigurationBuilder {
         this.numThreads = numThreads;
         return this;
     }
+    
+    public String outputReportPath() {
+        return this.baseReportName;
+    }
+
+    public LinkCheckerConfigurationBuilder outputReportPath(String outputReportPath) {
+        this.outputReportPath = outputReportPath;
+        return this;
+    }
+    
+    public String baseReportName() {
+        return this.baseReportName;
+    }
+
+    public LinkCheckerConfigurationBuilder baseReportName(String baseReportName) {
+        this.baseReportName = baseReportName;
+        return this;
+    }
 
     public LinkCheckerConfiguration build() {
         this.buildedObject = new LinkCheckerConfiguration();
@@ -75,6 +99,8 @@ public class LinkCheckerConfigurationBuilder {
         this.buildedObject.setMinInteractions(this.minInteractions);
         this.buildedObject.setSortNotFoundFirst(this.sortNotFoundFirst);
         this.buildedObject.setNumThreads(this.numThreads);
+        this.buildedObject.setOutputReportPath(this.outputReportPath);
+        this.buildedObject.setBaseReportName(this.baseReportName);
         return this.buildedObject;
     }
 

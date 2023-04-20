@@ -42,8 +42,6 @@ public class Main {
     private static void executionWithArguments(String[] args) {
     	List<LinkCheckerReport> reports = null;
     	
-    	print("ARGS ---> " + args.toString());
-    	
     	if (argumentsAreCorrect(args)) {
     		List<String> urls = StringUtils.splitList(args[0], "\\,");
     		print("URLS -----> " + urls);
@@ -52,7 +50,7 @@ public class Main {
     		String result = GsonUtils.getPrettyJSON(reports);
     		
     		if (ValidationUtils.isNotNull(args[2])) {
-    			String fileName = "results_" + DateUtils.getCurrentTime() + ".txt";
+    			String fileName = "fullReport_" + DateUtils.getCurrentTime() + ".txt";
     			FileUtils.writeTxt(result, args[2] + System.getProperty("file.separator") + fileName);
     		} else {
     			print(result);
@@ -70,7 +68,6 @@ public class Main {
     }
     
     private static LinkCheckerConfiguration createConfiguration(String propertiesPath) {
-    	print("PROPERTEIS PATH ---> " + propertiesPath);
     	LinkCheckerConfiguration config = LinkCheckerConfigurationFactory.createDefaultConfiguration();
     	if (ValidationUtils.isNotNull(propertiesPath) && !ValidationUtils.equalsIgnoreCase(propertiesPath, "default")) {
     		config = LinkCheckerConfigurationFactory.createConfiguration(propertiesPath);

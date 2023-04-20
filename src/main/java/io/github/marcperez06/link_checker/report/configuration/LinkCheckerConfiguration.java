@@ -6,7 +6,9 @@ public class LinkCheckerConfiguration {
 	private Integer minRequests;
 	private Integer minInteractions;
 	private boolean sortNotFoundFirst;
-	public int numThreads;
+	private int numThreads;
+	private String outputReportPath;
+	private String baseReportName;
 	
 	public LinkCheckerConfiguration() {
 		this.minDepth = null;
@@ -14,6 +16,8 @@ public class LinkCheckerConfiguration {
 		this.minInteractions = null;
 		this.sortNotFoundFirst = true;
 		this.numThreads = 1;
+		this.outputReportPath = null;
+		this.baseReportName = null;
 	}
 	
 	public Integer getMinDepth() {
@@ -54,6 +58,22 @@ public class LinkCheckerConfiguration {
 
 	public void setNumThreads(int numThreads) {
 		this.numThreads = numThreads;
+	}
+
+	public String getOutputReportPath() {
+		return this.outputReportPath;
+	}
+
+	public void setOutputReportPath(String outputReportPath) {
+		this.outputReportPath = outputReportPath;
+	}
+
+	public String getBaseReportName() {
+		return this.baseReportName;
+	}
+
+	public void setBaseReportName(String reportName) {
+		this.baseReportName = reportName;
 	}
 
 }

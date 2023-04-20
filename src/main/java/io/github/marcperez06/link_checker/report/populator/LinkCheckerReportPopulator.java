@@ -112,6 +112,7 @@ public class LinkCheckerReportPopulator {
 		report.countNumLinksCanNotChecked();
 		report.countNumGoodLinks();
 		report.countNumBadLinks();
+		report.countNumForbiddenLinks();
 	}
 
 }

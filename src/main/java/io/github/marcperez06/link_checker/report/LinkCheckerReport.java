@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
 import io.github.marcperez06.link_checker.report.configuration.LinkCheckerConfiguration;
+import io.github.marcperez06.link_checker.report.configuration.factory.LinkCheckerConfigurationFactory;
 import io.github.marcperez06.link_checker.report.link.LinkInfo;
 import io.github.marcperez06.link_checker.report.link.LinkRelation;
 import io.github.marcperez06.link_checker.report.link.comparator.LinkInfoComparator;
@@ -22,6 +23,8 @@ public class LinkCheckerReport {
 	private List<LinkRelation> linksNotVisited;
 	private List<LinkRelation> linksCanNotChecked;
 	private List<String> summaryGoodLinks;
+	private List<String> summaryForbiddenLinks;
+	private List<String> summaryRequestDeniedLinks;
 	private LinkCheckerConfiguration configuration;
 	
 	
@@ -33,7 +36,9 @@ public class LinkCheckerReport {
 		this.linksCanNotChecked = new ArrayList<LinkRelation>();
 		this.summaryGoodLinks = new ArrayList<String>();
 		this.summaryBadLinks = new ArrayList<String>();
-		this.configuration = new LinkCheckerConfiguration();
+		this.summaryForbiddenLinks = new ArrayList<String>();
+		this.summaryRequestDeniedLinks = new ArrayList<String>();
+		this.configuration = LinkCheckerConfigurationFactory.createDefaultConfiguration();
 		ListUtils.addObjectInList(this.linksNotVisited, new LinkRelation(null, link));
 	}
 	
@@ -66,6 +71,10 @@ public class LinkCheckerReport {
 		MapUtils.addObjectIfNotExistInMap(this.linksVisited, link, linkInfo);
 		if (linkInfo.getStatus() == Status.OK) {
 			addGoodLink(link);
+		} else if (linkInfo.getStatus() == Status.FORBIDDEN) {
+			addForbiddenLink(link);
+		} else if (linkInfo.getStatus() == Status.REQUEST_DENIED) {
+			addRequestDeniedLink(link);
 		} else {
 			addBadLink(link);
 		}
@@ -129,6 +138,22 @@ public class LinkCheckerReport {
 		ListUtils.addObjectInList(this.summaryBadLinks, link);
 	}
 	
+	public synchronized List<String> getSummaryForbiddenLinks() {
+		return this.summaryForbiddenLinks;
+	}
+	
+	public synchronized void addForbiddenLink(String link) {
+		ListUtils.addObjectInList(this.summaryForbiddenLinks, link);
+	}
+	
+	public synchronized List<String> getSummaryRequestDeniedLinks() {
+		return this.summaryRequestDeniedLinks;
+	}
+	
+	public synchronized void addRequestDeniedLink(String link) {
+		ListUtils.addObjectInList(this.summaryRequestDeniedLinks, link);
+	}
+	
 	public synchronized void setConfiguration(LinkCheckerConfiguration configuration) {
 		this.configuration = configuration;
 	}
@@ -178,6 +203,18 @@ public class LinkCheckerReport {
 	public synchronized int countNumBadLinks() {
 		int count = this.summaryBadLinks.size();
 		this.statistics.setNumBadLinks(count);
+		return count;
+	}
+	
+	public synchronized int countNumForbiddenLinks() {
+		int count = this.summaryForbiddenLinks.size();
+		this.statistics.setNumForbiddenLinks(count);
+		return count;
+	}
+	
+	public synchronized int countNumRequestDeniedLinks() {
+		int count = this.summaryRequestDeniedLinks.size();
+		this.statistics.setNumRequestDeniedLinks(count);
 		return count;
 	}
 	

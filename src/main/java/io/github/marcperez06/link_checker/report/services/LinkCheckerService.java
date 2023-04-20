@@ -9,6 +9,9 @@ import io.github.marcperez06.java_utilities.api.request.Response;
 import io.github.marcperez06.java_utilities.api.request.enums.HttpMethodEnum;
 import io.github.marcperez06.java_utilities.api.rest.UnirestClient;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
+import io.github.marcperez06.java_utilities.date.DateUtils;
+import io.github.marcperez06.java_utilities.file.FileUtils;
+import io.github.marcperez06.java_utilities.json.GsonUtils;
 import io.github.marcperez06.java_utilities.logger.Logger;
 import io.github.marcperez06.java_utilities.strings.StringUtils;
 import io.github.marcperez06.java_utilities.testdata.DataCollector;
@@ -16,6 +19,7 @@ import io.github.marcperez06.java_utilities.threads.ThreadUtils;
 import io.github.marcperez06.java_utilities.timer.Timer;
 import io.github.marcperez06.java_utilities.uri.UriUtils;
 import io.github.marcperez06.java_utilities.validation.ValidationUtils;
+import io.github.marcperez06.link_checker.information.Paths;
 import io.github.marcperez06.link_checker.report.LinkCheckerReport;
 import io.github.marcperez06.link_checker.report.LinkCheckerStatistics;
 import io.github.marcperez06.link_checker.report.configuration.LinkCheckerConfiguration;
@@ -98,6 +102,7 @@ public class LinkCheckerService {
 		this.timer.stopTimer();
 		this.fillLinkCheckerReportStatistics(report);
 		report.sortLinksVisited();
+		this.writeReportResult(report);
 		return report;
 	}
 
@@ -216,6 +221,8 @@ public class LinkCheckerService {
 		report.countNumLinksCanNotChecked();
 		report.countNumGoodLinks();
 		report.countNumBadLinks();
+		report.countNumForbiddenLinks();
+		report.countNumRequestDeniedLinks();
 	}
 	
 	private void printReportStatusInfo(LinkCheckerReport report) {
@@ -234,6 +241,18 @@ public class LinkCheckerService {
 												linksNotVisited, interactions, requets);
 		
 		Logger.println(reportStatus);
+	}
+	
+	private void writeReportResult(LinkCheckerReport report) {
+		String outputReportPath = report.getConfiguration().getOutputReportPath();
+		if (ValidationUtils.isNotEmpty(outputReportPath)) {
+			String result = GsonUtils.getPrettyJSON(report);
+			String fileName = report.getConfiguration().getBaseReportName() + "_";
+			fileName += StringUtils.encode(report.getFirstLink());
+			fileName += "_" + DateUtils.getCurrentTime() + ".txt";
+			String path = UriUtils.path(outputReportPath, Paths.FILE_SEPARATOR) + fileName;
+			FileUtils.writeTxt(result, path);
+		}
 	}
 
 }

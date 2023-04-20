@@ -9,6 +9,8 @@ public class LinkCheckerStatistics {
 	private int numLinksCanNotChecked;
 	private int numGoodLinks;
 	private int numBadLinks;
+	private int numForbiddenLinks;
+	private int numRequestDeniedLinks;
 	private int currentDepth;
 	private long executionDurationInSeconds;
 	
@@ -20,6 +22,8 @@ public class LinkCheckerStatistics {
 		this.numLinksCanNotChecked = 0;
 		this.numGoodLinks = 0;
 		this.numBadLinks = 0;
+		this.numForbiddenLinks = 0;
+		this.numRequestDeniedLinks = 0;
 		this.currentDepth = 0;
 		this.executionDurationInSeconds = 0;
 	}
@@ -88,6 +92,22 @@ public class LinkCheckerStatistics {
 		this.numBadLinks = numLinks;
 	}
 	
+	public synchronized int getNumForbiddenLinks() {
+		return this.numForbiddenLinks;
+	}
+	
+	public synchronized void setNumForbiddenLinks(int numLinks) {
+		this.numForbiddenLinks = numLinks;
+	}
+	
+	public int getNumRequestDeniedLinks() {
+		return this.numRequestDeniedLinks;
+	}
+
+	public void setNumRequestDeniedLinks(int numRequestDeniedLinks) {
+		this.numRequestDeniedLinks = numRequestDeniedLinks;
+	}
+
 	public synchronized int getCurrentDepth() {
 		return this.currentDepth;
 	}

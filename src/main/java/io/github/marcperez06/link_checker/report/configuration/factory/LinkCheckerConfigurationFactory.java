@@ -59,6 +59,14 @@ public class LinkCheckerConfigurationFactory {
 			builder.sortNotFoundFirst(true);
 		}
 		
+		if (!properties.existProperty(PropertiesKeys.OUTPUT_REPORT_PATH)) {
+			builder.outputReportPath(null);
+		}
+		
+		if (!properties.existProperty(PropertiesKeys.BASE_REPORT_NAME)) {
+			builder.baseReportName(null);
+		}
+		
 		if (builder.minDepth() == null && builder.minInteractions() == null && builder.minRequests() == null) {
 			builder.minDepth(0).minInteractions(0).minRequests(0);
 		}
@@ -85,6 +93,14 @@ public class LinkCheckerConfigurationFactory {
 		
 		if (properties.existProperty(PropertiesKeys.SORT_NOT_FOUND_FIRST)) {
 			builder.sortNotFoundFirst(properties.getPropertyAsBoolean(PropertiesKeys.SORT_NOT_FOUND_FIRST).booleanValue());
+		}
+		
+		if (properties.existProperty(PropertiesKeys.OUTPUT_REPORT_PATH)) {
+			builder.outputReportPath(properties.getProperty(PropertiesKeys.OUTPUT_REPORT_PATH));
+		}
+		
+		if (properties.existProperty(PropertiesKeys.BASE_REPORT_NAME)) {
+			builder.baseReportName(properties.getProperty(PropertiesKeys.BASE_REPORT_NAME));
 		}
 	}
 
