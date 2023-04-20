@@ -54,6 +54,8 @@ configurationBuilder.numThreads(2);
 configurationBuilder.minInteractions(10);
 configurationBuilder.minRequests(5);
 configurationBuilder.sortNotFoundFirst(false);
+configurationBuilder.outputReportPath("where you want the report writed on json format");
+configurationBuilder.baseReportName("base name for the report");
 LinkCheckerReport report = LinkCheckerService.getReport(url, configurationBuilder.build());
 
 ```
@@ -92,7 +94,7 @@ The default path for the properties is under project directory, following the pa
 
 ``` 
 
-- Properties Example:
+- Properties Example (All of them are optional):
 ```
 link.checker.min.depth.enabled=true
 link.checker.min.depth=1
@@ -105,6 +107,9 @@ link.checker.min.requests=100
 
 link.checker.num.threads=3
 link.checker.sort.not.found.first=true
+
+link.checker.output.report.path=output/reports
+link.checker.base.report.name=report
 ```
 
 ## Example of Report
@@ -122,6 +127,8 @@ This Report have some info deleted for reduce his size
     "numLinksCanNotChecked": 0,
     "numGoodLinks": 1,
     "numBadLinks": 0,
+    "numForbiddenLinks": 0,
+    "numRequestDeniedLinks": 0,
     "currentDepth": 0,
     "executionDurationInSeconds": 1
   },
@@ -151,6 +158,8 @@ This Report have some info deleted for reduce his size
   "summaryGoodLinks": [
     "https://www.fao.org/home/es"
   ],
+  "summaryForbiddenLinks": [],
+  "summaryRequestDeniedLinks": [],
   "configuration": {
     "minDepth": 0,
     "sortNotFoundFirst": true,
