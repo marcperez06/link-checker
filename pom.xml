@@ -179,6 +179,7 @@
 				<executions>
 					<!-- CREATE JAR TO UPDATE TO MAVEN -->
 					<execution>
+						<id>maven-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
@@ -206,6 +207,7 @@
 					
 					<!-- CREATE EXECUTABLE JAR CALLED link-checker.jar, for execute on terminal -->
 					<execution>
+						<id>executable-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
