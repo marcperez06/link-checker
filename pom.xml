@@ -3,7 +3,7 @@
 
 	<groupId>io.github.marcperez06</groupId>
 	<artifactId>link-checker</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<packaging>jar</packaging>
 
 	<name>link-checker</name>
@@ -21,7 +21,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.13.1</junit.version>
 		<jdk.version>1.8</jdk.version>
-		<utilities.version>0.1.0</utilities.version>
+		<utilities.version>0.1.1</utilities.version>
 		<jsoup.version>1.15.4</jsoup.version>
 		<slf4j.version>2.0.7</slf4j.version>
 	</properties>
@@ -177,6 +177,34 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<executions>
+					<!-- CREATE JAR TO UPDATE TO MAVEN -->
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>io.github.marcperez06.link_checker.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+					
+					<!-- CREATE EXECUTABLE JAR CALLED link-checker.jar, for execute on terminal -->
 					<execution>
 						<phase>package</phase>
 						<goals>

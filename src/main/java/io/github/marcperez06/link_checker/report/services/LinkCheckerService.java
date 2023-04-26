@@ -240,7 +240,7 @@ public class LinkCheckerService {
 		reportStatus = StringUtils.format(reportStatus, currentDepth, linksVisited, 
 												linksNotVisited, interactions, requets);
 		
-		Logger.println(reportStatus);
+		Logger.log(reportStatus);
 	}
 	
 	private void writeReportResult(LinkCheckerReport report) {
