@@ -185,8 +185,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<minimizeJar>true</minimizeJar>
+							<finalName>${project.artifactId}-${project.version}</finalName>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
