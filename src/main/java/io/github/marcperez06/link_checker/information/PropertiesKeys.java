@@ -10,6 +10,7 @@ public class PropertiesKeys {
 	public static final String MIN_REQUESTS = "link.checker.min.requests";
 	public static final String NUM_THREADS = "link.checker.num.threads";
 	public static final String SORT_NOT_FOUND_FIRST = "link.checker.sort.not.found.first";
+	public static final String DOMAIN_WITHELIST = "link.checker.domain.withelist";
 	public static final String OUTPUT_REPORT_PATH = "link.checker.output.report.path";
 	public static final String BASE_REPORT_NAME = "link.checker.base.report.name";
 	

@@ -10,13 +10,17 @@ public class LinkInfo {
 	
 	private String link;
 	private Status status;
+	private Integer statusCode;
 	private int depth;
 	private List<String> entries;
 	private List<String> exits;
+	private String exceptionCausedBy;
 	
 	public LinkInfo() {
+		this.statusCode = null;
 		this.entries = new ArrayList<String>();
 		this.exits = new ArrayList<String>();
+		this.exceptionCausedBy = null;
 	}
 	
 	public LinkInfo(String link) {
@@ -27,6 +31,11 @@ public class LinkInfo {
 	public LinkInfo(String link, Status status) {
 		this(link);
 		this.status = status;
+	}
+	
+	public LinkInfo(String link, Status status, Integer statusCode) {
+		this(link, status);
+		this.statusCode = statusCode;
 	}
 
 	public String getLink() {
@@ -43,6 +52,14 @@ public class LinkInfo {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+	
+	public Integer getStatusCode() {
+		return this.statusCode;
+	}
+
+	public void setStatusCode(Integer statusCode) {
+		this.statusCode = statusCode;
 	}
 	
 	public boolean isGood() {
@@ -79,6 +96,14 @@ public class LinkInfo {
 	
 	public void addExit(String link) {
 		ListUtils.addObjectInList(this.exits, link);
+	}
+	
+	public String getExceptionCausedBy() {
+		return this.exceptionCausedBy;
+	}
+
+	public void setExceptionCausedBy(String exception) {
+		this.exceptionCausedBy = exception;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package io.github.marcperez06.link_checker.report.link.populator;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +14,8 @@ import io.github.marcperez06.link_checker.report.link.enums.Status;
 public class LinkInfoPopulator {
 	
 	public static <T> void populate(LinkInfo linkInfo, Response<T> response) {
-	
+		linkInfo.setStatusCode(response.getStatusCode());
+		
 		if (response.isSuccess()) {
 
 			Document document = getHtmlPage(response.getOriginalBody(), linkInfo.getLink());
@@ -28,6 +30,8 @@ public class LinkInfoPopulator {
 			fillLinkInfoForForbiddenStatus(linkInfo);
 		} else if (response.statusCodeIs(999)) {
 			fillLinkInfoForRequestDeniedStatus(linkInfo);
+		} else if (response.statusCodeIs(-1)) {
+			fillLinkInfoForExceptionStatus(linkInfo, response);
 		} else {
 			fillLinkInfoForUnexpectedStatus(linkInfo);
 		}
@@ -59,6 +63,15 @@ public class LinkInfoPopulator {
 	
 	private static void fillLinkInfoForUnexpectedStatus(LinkInfo linkInfo) {
 		fillLinkInfoForBadStatus(linkInfo, Status.UNEXPECTED);
+	}
+	
+	private static <T> void fillLinkInfoForExceptionStatus(LinkInfo linkInfo, Response<T> response) {
+		Optional<Exception> error = response.getError();
+		if (error.isPresent()) {
+			linkInfo.setExceptionCausedBy(error.get().getCause().getMessage());
+		}
+		linkInfo.setStatusCode(null);
+		fillLinkInfoForBadStatus(linkInfo, Status.EXCEPTION);
 	}
 	
 	private static void fillLinkInfoForBadStatus(LinkInfo linkInfo, Status status) {

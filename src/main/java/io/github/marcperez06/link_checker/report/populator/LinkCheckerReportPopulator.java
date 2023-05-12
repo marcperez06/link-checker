@@ -98,7 +98,8 @@ public class LinkCheckerReportPopulator {
 		try {
 			response = api.send(request);
 		} catch (Exception e) {
-			response = new Response<Void>(Response.NOT_FOUND);
+			response = new Response<Void>(-1);
+			response.setError(e);
 		}
 
 		return response;

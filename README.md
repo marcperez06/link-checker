@@ -3,7 +3,38 @@
 - This library only works for static links, if the link request credentials for access to new links, it will not work
 - This library only get future links to visit from the pages that share the domain name of first link
 
-## How to use link checker
+## How to use link checker from command line
+
+For use link checker from command line can use this two methods.
+
+1. Execute and answer the questions of command line
+```
+java -jar link-checker.jar
+```
+
+2. Execute directly using parameters url, properties path (optional) and output folder path (optional)
+2.1 Execute directly with default properties
+```
+java -jar link-checker.jar https://www.web.com
+```
+2.2 Execute directly specifying properties path
+```
+java -jar link-checker.jar https://www.web.com /properties/path
+```
+or
+```
+java -jar link-checker.jar https://www.web.com default
+```
+2.3 Execute directly specifying output path
+```
+java -jar link-checker.jar https://www.web.com /properties/path output/path
+```
+or
+```
+java -jar link-checker.jar https://www.web.com default output/path
+```
+
+## How to use link checker as library
 
 For use link checker dependency follow this steps
 
@@ -13,13 +44,13 @@ For use link checker dependency follow this steps
 <dependency>
     <groupId>io.github.marcperez06</groupId>
     <artifactId>link-checker</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
 - For Gradle:
 ```
-implementation 'io.github.marcperez06:link-checker:0.0.2'
+implementation 'io.github.marcperez06:link-checker:0.0.5'
 ```
 
 2. Call method `getReport()` or `getReports()` of LinkCheckerService  
@@ -104,6 +135,8 @@ link.checker.min.interactions=100
 
 link.checker.min.requests.enabled=true
 link.checker.min.requests=100
+
+link.checker.domain.withelist=urls that not belongs to your domain, but you want to check it, separated by comma (,)
 
 link.checker.num.threads=3
 link.checker.sort.not.found.first=true

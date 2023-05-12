@@ -1,10 +1,13 @@
 package io.github.marcperez06.link_checker.report.configuration;
 
+import java.util.List;
+
 public class LinkCheckerConfiguration {
 	
 	private Integer minDepth;
 	private Integer minRequests;
 	private Integer minInteractions;
+	private List<String> domainWithelist;
 	private boolean sortNotFoundFirst;
 	private int numThreads;
 	private String outputReportPath;
@@ -14,6 +17,7 @@ public class LinkCheckerConfiguration {
 		this.minDepth = null;
 		this.minRequests = null;
 		this.minInteractions = null;
+		this.domainWithelist = null;
 		this.sortNotFoundFirst = true;
 		this.numThreads = 1;
 		this.outputReportPath = null;
@@ -42,6 +46,14 @@ public class LinkCheckerConfiguration {
 
 	public void setMinInteractions(Integer maxInteractions) {
 		this.minInteractions = maxInteractions;
+	}
+	
+	public List<String> getDomainWithelist() {
+		return this.domainWithelist;
+	}
+
+	public void setDomainWithelist(List<String> domainWithelist) {
+		this.domainWithelist = domainWithelist;
 	}
 
 	public boolean isSortEnabled() {

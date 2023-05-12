@@ -95,6 +95,10 @@ public class LinkCheckerConfigurationFactory {
 			builder.sortNotFoundFirst(properties.getPropertyAsBoolean(PropertiesKeys.SORT_NOT_FOUND_FIRST).booleanValue());
 		}
 		
+		if (properties.existProperty(PropertiesKeys.DOMAIN_WITHELIST)) {
+			builder.domainWithelist(properties.getProperty(PropertiesKeys.DOMAIN_WITHELIST));
+		}
+		
 		if (properties.existProperty(PropertiesKeys.OUTPUT_REPORT_PATH)) {
 			builder.outputReportPath(properties.getProperty(PropertiesKeys.OUTPUT_REPORT_PATH));
 		}
