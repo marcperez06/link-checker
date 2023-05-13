@@ -1,6 +1,9 @@
 package io.github.marcperez06.link_checker.report.link.validation;
 
+import java.util.List;
+
 import io.github.marcperez06.java_utilities.strings.StringUtils;
+import io.github.marcperez06.link_checker.report.LinkCheckerReport;
 
 public class LinkValidation {
 	
@@ -13,6 +16,17 @@ public class LinkValidation {
 		isValid &= !StringUtils.isBlank(link);
 		isValid &= !StringUtils.valueContainsAnyWord(link, MAILTO, JAVASCRIPT, PHONE);
 		return isValid;
+	}
+	
+	public static boolean linkBelongsToDomainOrWithelist(String link, LinkCheckerReport report) {
+		boolean belongs = false;
+		List<String> withelist = report.getConfiguration().getDomainWithelist();
+		String domain = report.getFirstLink();
+		belongs = link.contains(domain);
+		if (!belongs) {
+			belongs = StringUtils.valueContainsAnyWord(link, withelist.toArray(new String[withelist.size()]));	
+		}
+		return belongs;
 	}
 
 }

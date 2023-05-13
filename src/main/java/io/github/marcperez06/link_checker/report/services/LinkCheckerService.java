@@ -100,7 +100,7 @@ public class LinkCheckerService {
 		this.timer.startTimer();
 		this.checkLinksNotVisited(report);
 		this.timer.stopTimer();
-		this.fillLinkCheckerReportStatistics(report);
+		LinkCheckerReportPopulator.fillLinkCheckerReportStatistics(report);
 		report.sortLinksVisited();
 		this.writeReportResult(report);
 		return report;
@@ -135,96 +135,6 @@ public class LinkCheckerService {
 
 	}
 
-	private void fillLinkCheckerInfo(LinkCheckerReport report, LinkRelation linkRelation) {
-		String link = linkRelation.getTo();
-		link = this.getCorrectLink(link, report.getFirstLink());
-		linkRelation.setTo(link);
-
-		if (LinkValidation.canCheck(link)) {
-			
-			report.addNumRequest();
-			boolean existLink = MapUtils.existObjectInMap(report.getLinksVisited(), link);
-
-			if (!existLink) {
-				this.newLinkStrategy(report, linkRelation);
-			} else {
-				this.visitedLinkStrategy(report, link);
-			}
-
-		} else {
-			report.addLinkCanNotChecked(linkRelation);
-			report.removeLinkNotVisited(linkRelation);
-		}
-
-	}
-
-	private String getCorrectLink(String link, final String host) {
-		boolean transformLink = !link.startsWith("http://") && !link.startsWith("https://");
-		if (transformLink) {
-			link = UriUtils.path(host, link);
-		}
-		return link;
-	}
-
-	private void addLinkEntry(LinkInfo linkInfo, String linkEntry) {
-		if (linkEntry != null && !ValidationUtils.equalsIgnoreCase(linkInfo.getLink(), linkEntry)) {
-			linkInfo.addEntry(linkEntry);
-		}
-	}
-
-	private void visitedLinkStrategy(LinkCheckerReport report, String link) {
-		LinkInfo linkInfo = MapUtils.getMapValue(report.getLinksVisited(), link);
-		this.addLinkEntry(linkInfo, link);
-	}
-
-	private void newLinkStrategy(LinkCheckerReport report, LinkRelation linkRelation) {
-		String link = linkRelation.getTo();
-		LinkInfo linkInfo = this.getLinkInfo(link);
-		this.addLinkEntry(linkInfo, linkRelation.getFrom());
-
-		if (linkInfo.isGood()) {
-			linkInfo.setDepth(report.getStatistics().getCurrentDepth());
-
-			if (link.contains(report.getFirstLink())) {
-				report.addLinksNotVisited(link, linkInfo.getExits());
-			}
-		}
-
-		report.addLinkVisited(link, linkInfo);
-		report.removeLinkNotVisited(linkRelation);
-	}
-
-	private LinkInfo getLinkInfo(String link) {
-		LinkInfo linkInfo = new LinkInfo(link);
-		Response<Void> response = this.getUrlResponse(link);
-		LinkInfoPopulator.populate(linkInfo, response);
-		return linkInfo;
-	}
-
-	private Response<Void> getUrlResponse(String link) {
-		Request request = new Request(HttpMethodEnum.GET, link);
-		Response<Void> response = null;
-
-		try {
-			response = this.api.send(request);
-		} catch (Exception e) {
-			response = new Response<Void>(Response.NOT_FOUND);
-		}
-
-		return response;
-	}
-	
-	public void fillLinkCheckerReportStatistics(LinkCheckerReport report) {
-		report.setExecutionDuration(this.timer.getTime(TimeUnit.SECONDS));
-		report.countNumLinksVisited();
-		report.countNumLinksNotVisited();
-		report.countNumLinksCanNotChecked();
-		report.countNumGoodLinks();
-		report.countNumBadLinks();
-		report.countNumForbiddenLinks();
-		report.countNumRequestDeniedLinks();
-	}
-	
 	private void printReportStatusInfo(LinkCheckerReport report) {
 		LinkCheckerReportPopulator.fillLinkCheckerReportStatistics(report);
 		LinkCheckerStatistics statistics = report.getStatistics();

@@ -68,7 +68,7 @@ public class LinkInfoPopulator {
 	private static <T> void fillLinkInfoForExceptionStatus(LinkInfo linkInfo, Response<T> response) {
 		Optional<Exception> error = response.getError();
 		if (error.isPresent()) {
-			linkInfo.setExceptionCausedBy(error.get().getCause().getMessage());
+			linkInfo.setExceptionCausedBy(error.get().getCause().getCause().getMessage());
 		}
 		linkInfo.setStatusCode(null);
 		fillLinkInfoForBadStatus(linkInfo, Status.EXCEPTION);

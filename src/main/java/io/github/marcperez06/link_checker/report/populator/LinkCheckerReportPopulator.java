@@ -74,7 +74,7 @@ public class LinkCheckerReportPopulator {
 		if (linkInfo.isGood()) {
 			linkInfo.setDepth(report.getStatistics().getCurrentDepth());
 
-			if (link.contains(report.getFirstLink())) {
+			if (LinkValidation.linkBelongsToDomainOrWithelist(link, report)) {
 				report.addLinksNotVisited(link, linkInfo.getExits());
 			}
 		}
@@ -112,8 +112,10 @@ public class LinkCheckerReportPopulator {
 		report.countNumLinksNotVisited();
 		report.countNumLinksCanNotChecked();
 		report.countNumGoodLinks();
-		report.countNumBadLinks();
+		report.countNumNotFoundLinks();
 		report.countNumForbiddenLinks();
+		report.countNumRequestDeniedLinks();
+		report.countNumLinksThrownException();
 	}
 
 }

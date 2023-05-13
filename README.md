@@ -136,10 +136,11 @@ link.checker.min.interactions=100
 link.checker.min.requests.enabled=true
 link.checker.min.requests=100
 
-link.checker.domain.withelist=urls that not belongs to your domain, but you want to check it, separated by comma (,)
-
 link.checker.num.threads=3
 link.checker.sort.not.found.first=true
+
+# urls that not belongs to your domain, but you want to check it, separated by comma (,)
+link.checker.domain.withelist=google.com, https://nato.io
 
 link.checker.output.report.path=output/reports
 link.checker.base.report.name=report
@@ -151,7 +152,7 @@ This Report have some info deleted for reduce his size
 ```
 {
   "firstLink": "https://www.fao.org/home/es",
-  "summaryBadLinks": [],
+  "summaryNotFoundLinks": [],
   "statistics": {
     "numInteractions": 1,
     "numRequests": 1,
@@ -159,9 +160,10 @@ This Report have some info deleted for reduce his size
     "numLinksNotVisited": 92,
     "numLinksCanNotChecked": 0,
     "numGoodLinks": 1,
-    "numBadLinks": 0,
+    "numNotFoundLinks": 0,
     "numForbiddenLinks": 0,
     "numRequestDeniedLinks": 0,
+    "numLinksThrownException": 0,
     "currentDepth": 0,
     "executionDurationInSeconds": 1
   },
@@ -193,6 +195,7 @@ This Report have some info deleted for reduce his size
   ],
   "summaryForbiddenLinks": [],
   "summaryRequestDeniedLinks": [],
+  "summaryLinksThrownException": [],
   "configuration": {
     "minDepth": 0,
     "sortNotFoundFirst": true,

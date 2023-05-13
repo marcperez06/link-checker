@@ -17,7 +17,7 @@ public class LinkCheckerServiceWithDefaultConfigurationTest {
 	
 	@Test
 	public void linkCheckerServiceWithDefaultPropertiesTest() {
-		String url = "https://www.linkedin.com/company/4financespain";
+		String url = "https://www.nato.int/nato-welcome/index_es.html";
 		LinkCheckerConfiguration configuration = new LinkCheckerConfigurationBuilder().build();
 		LinkCheckerReport report = LinkCheckerService.getReport(url, configuration);
 		assert report != null;

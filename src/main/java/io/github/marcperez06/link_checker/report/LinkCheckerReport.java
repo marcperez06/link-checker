@@ -17,7 +17,7 @@ import io.github.marcperez06.link_checker.report.link.enums.Status;
 public class LinkCheckerReport {
 	
 	private String firstLink;
-	private List<String> summaryBadLinks;
+	private List<String> summaryNotFoundLinks;
 	private LinkCheckerStatistics statistics;
 	private Map<String, LinkInfo> linksVisited;
 	private List<LinkRelation> linksNotVisited;
@@ -25,19 +25,21 @@ public class LinkCheckerReport {
 	private List<String> summaryGoodLinks;
 	private List<String> summaryForbiddenLinks;
 	private List<String> summaryRequestDeniedLinks;
+	private List<String> summaryLinksThrownException;
 	private LinkCheckerConfiguration configuration;
 	
 	
 	public LinkCheckerReport(String link) {
-		this.firstLink = link;
+		this.firstLink = (link != null) ? link : "";
 		this.statistics = new LinkCheckerStatistics();
 		this.linksVisited = new ConcurrentHashMap<String, LinkInfo>();
 		this.linksNotVisited = new ArrayList<LinkRelation>();
 		this.linksCanNotChecked = new ArrayList<LinkRelation>();
 		this.summaryGoodLinks = new ArrayList<String>();
-		this.summaryBadLinks = new ArrayList<String>();
+		this.summaryNotFoundLinks = new ArrayList<String>();
 		this.summaryForbiddenLinks = new ArrayList<String>();
 		this.summaryRequestDeniedLinks = new ArrayList<String>();
+		this.summaryLinksThrownException = new ArrayList<String>();
 		this.configuration = LinkCheckerConfigurationFactory.createDefaultConfiguration();
 		ListUtils.addObjectInList(this.linksNotVisited, new LinkRelation(null, link));
 	}
@@ -70,13 +72,15 @@ public class LinkCheckerReport {
 	public synchronized void addLinkVisited(String link, LinkInfo linkInfo) {
 		MapUtils.addObjectIfNotExistInMap(this.linksVisited, link, linkInfo);
 		if (linkInfo.getStatus() == Status.OK) {
-			addGoodLink(link);
+			this.addGoodLink(link);
+		} else if (linkInfo.getStatus() == Status.NOT_FOUND) {
+			this.addNotFoundLink(link);
 		} else if (linkInfo.getStatus() == Status.FORBIDDEN) {
-			addForbiddenLink(link);
+			this.addForbiddenLink(link);
 		} else if (linkInfo.getStatus() == Status.REQUEST_DENIED) {
-			addRequestDeniedLink(link);
-		} else {
-			addBadLink(link);
+			this.addRequestDeniedLink(link);
+		} else if (linkInfo.getStatus() == Status.EXCEPTION) {
+			this.addLinkThrownException(link);
 		}
 	}
 	
@@ -130,12 +134,12 @@ public class LinkCheckerReport {
 		ListUtils.addObjectInList(this.summaryGoodLinks, link);
 	}
 	
-	public synchronized List<String> getSummaryBadLinks() {
-		return this.summaryBadLinks;
+	public synchronized List<String> getSummaryNotFoundLinks() {
+		return this.summaryNotFoundLinks;
 	}
 	
-	public synchronized void addBadLink(String link) {
-		ListUtils.addObjectInList(this.summaryBadLinks, link);
+	public synchronized void addNotFoundLink(String link) {
+		ListUtils.addObjectInList(this.summaryNotFoundLinks, link);
 	}
 	
 	public synchronized List<String> getSummaryForbiddenLinks() {
@@ -152,6 +156,14 @@ public class LinkCheckerReport {
 	
 	public synchronized void addRequestDeniedLink(String link) {
 		ListUtils.addObjectInList(this.summaryRequestDeniedLinks, link);
+	}
+	
+	public synchronized List<String> getSummaryLinksThrownException() {
+		return this.summaryLinksThrownException;
+	}
+	
+	public synchronized void addLinkThrownException(String link) {
+		ListUtils.addObjectInList(this.summaryLinksThrownException, link);
 	}
 	
 	public synchronized void setConfiguration(LinkCheckerConfiguration configuration) {
@@ -200,9 +212,9 @@ public class LinkCheckerReport {
 		return count;
 	}
 	
-	public synchronized int countNumBadLinks() {
-		int count = this.summaryBadLinks.size();
-		this.statistics.setNumBadLinks(count);
+	public synchronized int countNumNotFoundLinks() {
+		int count = this.summaryNotFoundLinks.size();
+		this.statistics.setNumNotFoundLinks(count);
 		return count;
 	}
 	
@@ -215,6 +227,12 @@ public class LinkCheckerReport {
 	public synchronized int countNumRequestDeniedLinks() {
 		int count = this.summaryRequestDeniedLinks.size();
 		this.statistics.setNumRequestDeniedLinks(count);
+		return count;
+	}
+	
+	public synchronized int countNumLinksThrownException() {
+		int count = this.summaryLinksThrownException.size();
+		this.statistics.setNumLinksThrownException(count);
 		return count;
 	}
 	
