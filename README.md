@@ -85,6 +85,7 @@ configurationBuilder.numThreads(2);
 configurationBuilder.minInteractions(10);
 configurationBuilder.minRequests(5);
 configurationBuilder.sortNotFoundFirst(false);
+configurationBuilder.domainWithelist("domain you want to check that not belongs to your base domain");
 configurationBuilder.outputReportPath("where you want the report writed on json format");
 configurationBuilder.baseReportName("base name for the report");
 LinkCheckerReport report = LinkCheckerService.getReport(url, configurationBuilder.build());
