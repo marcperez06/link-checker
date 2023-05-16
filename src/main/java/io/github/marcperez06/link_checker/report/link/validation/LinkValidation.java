@@ -3,6 +3,7 @@ package io.github.marcperez06.link_checker.report.link.validation;
 import java.util.List;
 
 import io.github.marcperez06.java_utilities.strings.StringUtils;
+import io.github.marcperez06.java_utilities.validation.ValidationUtils;
 import io.github.marcperez06.link_checker.report.LinkCheckerReport;
 
 public class LinkValidation {
@@ -24,7 +25,7 @@ public class LinkValidation {
 		String domain = report.getFirstLink();
 		belongs = link.contains(domain);
 		if (!belongs) {
-			belongs = StringUtils.valueContainsAnyWord(link, withelist.toArray(new String[withelist.size()]));	
+			belongs = StringUtils.valueContainsAnyWord(link, withelist);	
 		}
 		return belongs;
 	}
