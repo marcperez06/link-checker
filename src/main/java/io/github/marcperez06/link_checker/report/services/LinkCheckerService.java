@@ -2,13 +2,8 @@ package io.github.marcperez06.link_checker.report.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.github.marcperez06.java_utilities.api.request.Request;
-import io.github.marcperez06.java_utilities.api.request.Response;
-import io.github.marcperez06.java_utilities.api.request.enums.HttpMethodEnum;
 import io.github.marcperez06.java_utilities.api.rest.UnirestClient;
-import io.github.marcperez06.java_utilities.collection.map.MapUtils;
 import io.github.marcperez06.java_utilities.date.DateUtils;
 import io.github.marcperez06.java_utilities.file.FileUtils;
 import io.github.marcperez06.java_utilities.json.GsonUtils;
@@ -25,11 +20,9 @@ import io.github.marcperez06.link_checker.report.LinkCheckerStatistics;
 import io.github.marcperez06.link_checker.report.configuration.LinkCheckerConfiguration;
 import io.github.marcperez06.link_checker.report.configuration.factory.LinkCheckerConfigurationFactory;
 import io.github.marcperez06.link_checker.report.configuration.validation.ConfigurationValidation;
-import io.github.marcperez06.link_checker.report.link.LinkInfo;
 import io.github.marcperez06.link_checker.report.link.LinkRelation;
-import io.github.marcperez06.link_checker.report.link.populator.LinkInfoPopulator;
-import io.github.marcperez06.link_checker.report.link.validation.LinkValidation;
 import io.github.marcperez06.link_checker.report.populator.LinkCheckerReportPopulator;
+import io.github.marcperez06.link_checker.report.populator.runnable.LinkCheckerReportCleanerTask;
 import io.github.marcperez06.link_checker.report.populator.runnable.LinkCheckerReportPopulateTask;
 
 public class LinkCheckerService {
@@ -99,6 +92,7 @@ public class LinkCheckerService {
 		LinkCheckerReport report = new LinkCheckerReport(link.trim(), configuration);
 		this.timer.startTimer();
 		this.checkLinksNotVisited(report);
+		this.cleanLinksNotVisited(report);
 		this.timer.stopTimer();
 		LinkCheckerReportPopulator.fillLinkCheckerReportStatistics(report);
 		report.sortLinksVisited();
@@ -108,17 +102,18 @@ public class LinkCheckerService {
 
 	@SuppressWarnings("unchecked")
 	private void checkLinksNotVisited(LinkCheckerReport report) {
+		int numThreads = report.getConfiguration().getNumThreads();
 		ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) report.getLinksNotVisited();
 		List<LinkRelation> copyOfLinksNotVisited = (List<LinkRelation>) linksNotVisited.clone();
 
-		ThreadUtils.createPool(report.getConfiguration().getNumThreads());
+		ThreadUtils.createPool(numThreads);
 		
 		boolean stopReport = false;
 		for (int i = 0; i < copyOfLinksNotVisited.size() && !stopReport; i++) {
 			LinkRelation linkNotVisited = copyOfLinksNotVisited.get(i);
 			ThreadUtils.addTask(new LinkCheckerReportPopulateTask(report, linkNotVisited));
 			stopReport = ConfigurationValidation.stopReportWithoutCheckDepth(report);
-			if (i % report.getConfiguration().getNumThreads() == 0) {
+			if (i % numThreads == 0) {
 				ThreadUtils.executeAllTask();
 			}
 		}
@@ -151,6 +146,29 @@ public class LinkCheckerService {
 												linksNotVisited, interactions, requets);
 		
 		Logger.log(reportStatus);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void cleanLinksNotVisited(LinkCheckerReport report) {
+		LinkCheckerConfiguration config = report.getConfiguration(); 
+		if (config.cleanLinksNotVisited()) {
+			int numThreads = config.getNumThreads();
+			ArrayList<LinkRelation> linksNotVisited = (ArrayList<LinkRelation>) report.getLinksNotVisited();
+			List<LinkRelation> copyOfLinksNotVisited = (List<LinkRelation>) linksNotVisited.clone();
+
+			ThreadUtils.createPool(numThreads);
+			
+			for (int i = 0; i < copyOfLinksNotVisited.size(); i++) {
+				LinkRelation linkNotVisited = copyOfLinksNotVisited.get(i);
+				ThreadUtils.addTask(new LinkCheckerReportCleanerTask(report, linkNotVisited));
+				if (i % numThreads == 0) {
+					ThreadUtils.executeAllTask();
+				}
+			}
+			
+			ThreadUtils.waitUntilExecutionFinish();	
+		}
+		
 	}
 	
 	private void writeReportResult(LinkCheckerReport report) {

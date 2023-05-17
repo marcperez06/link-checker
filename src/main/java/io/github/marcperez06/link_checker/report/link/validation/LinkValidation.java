@@ -22,8 +22,7 @@ public class LinkValidation {
 	public static boolean linkBelongsToDomainOrWithelist(String link, LinkCheckerReport report) {
 		boolean belongs = false;
 		List<String> withelist = report.getConfiguration().getDomainWithelist();
-		String domain = report.getFirstLink();
-		belongs = link.contains(domain);
+		belongs = link.contains(report.getDomain());
 		if (!belongs) {
 			belongs = StringUtils.valueContainsAnyWord(link, withelist);	
 		}

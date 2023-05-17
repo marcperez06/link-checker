@@ -12,6 +12,7 @@ public class LinkCheckerConfiguration {
 	private int numThreads;
 	private String outputReportPath;
 	private String baseReportName;
+	private boolean cleanLinksNotVisited;
 	
 	public LinkCheckerConfiguration() {
 		this.minDepth = null;
@@ -22,6 +23,7 @@ public class LinkCheckerConfiguration {
 		this.numThreads = 1;
 		this.outputReportPath = null;
 		this.baseReportName = null;
+		this.cleanLinksNotVisited = true;
 	}
 	
 	public Integer getMinDepth() {
@@ -86,6 +88,14 @@ public class LinkCheckerConfiguration {
 
 	public void setBaseReportName(String reportName) {
 		this.baseReportName = reportName;
+	}
+	
+	public boolean cleanLinksNotVisited() {
+		return this.cleanLinksNotVisited;
+	}
+	
+	public void setCleanLinksNotVisited(boolean cleanLinksNotVisited) {
+		this.cleanLinksNotVisited = cleanLinksNotVisited;
 	}
 
 }

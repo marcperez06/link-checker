@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.marcperez06.java_utilities.collection.list.ListUtils;
 import io.github.marcperez06.java_utilities.collection.map.MapUtils;
+import io.github.marcperez06.java_utilities.strings.StringUtils;
 import io.github.marcperez06.link_checker.report.configuration.LinkCheckerConfiguration;
 import io.github.marcperez06.link_checker.report.configuration.factory.LinkCheckerConfigurationFactory;
 import io.github.marcperez06.link_checker.report.link.LinkInfo;
@@ -17,6 +18,7 @@ import io.github.marcperez06.link_checker.report.link.enums.Status;
 public class LinkCheckerReport {
 	
 	private String firstLink;
+	private String domain;
 	private List<String> summaryNotFoundLinks;
 	private LinkCheckerStatistics statistics;
 	private Map<String, LinkInfo> linksVisited;
@@ -31,6 +33,7 @@ public class LinkCheckerReport {
 	
 	public LinkCheckerReport(String link) {
 		this.firstLink = (link != null) ? link : "";
+		this.domain = this.buildDomain();
 		this.statistics = new LinkCheckerStatistics();
 		this.linksVisited = new ConcurrentHashMap<String, LinkInfo>();
 		this.linksNotVisited = new ArrayList<LinkRelation>();
@@ -47,6 +50,10 @@ public class LinkCheckerReport {
 	public LinkCheckerReport(String link, LinkCheckerConfiguration configruation) {
 		this(link);
 		this.configuration = configruation;
+	}
+	
+	public synchronized String getDomain() {
+		return this.domain;
 	}
 	
 	public synchronized String getFirstLink() {
@@ -242,10 +249,34 @@ public class LinkCheckerReport {
 	
 	// -------------- OTHER METHODS -------------------------------
 	
-	public void sortLinksVisited() {
+	public synchronized void sortLinksVisited() {
 		if (this.configuration.isSortEnabled()) {
 			this.linksVisited = MapUtils.sortMapByValue(this.linksVisited, new LinkInfoComparator());
 		}
+	}
+	
+	private synchronized String buildDomain() {
+		String domain = this.cleanFirstLink("https://");
+		
+		if (domain.isEmpty()) {
+			this.cleanFirstLink("http://");
+		}
+		
+		if (domain.isEmpty()) {
+			domain = this.firstLink;
+		}
+		
+		return domain;
+	}
+	
+	private synchronized String cleanFirstLink(String startsWith) {
+		String cleanedFirstLink = "";
+		if (this.firstLink.startsWith(startsWith)) {
+			cleanedFirstLink = StringUtils.cutStartingPartOfString(this.firstLink, startsWith);
+			List<String> partsOfLink = StringUtils.splitList(cleanedFirstLink, "\\/");
+			cleanedFirstLink = partsOfLink.size() > 0 ? partsOfLink.get(0) : "";
+		}
+		return cleanedFirstLink;
 	}
 
 }

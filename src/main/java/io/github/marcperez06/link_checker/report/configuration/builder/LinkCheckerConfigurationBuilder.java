@@ -24,6 +24,8 @@ public class LinkCheckerConfigurationBuilder {
     private String outputReportPath;
     
     private String baseReportName;
+    
+    //TODO: add clean links not visited;
 
     public LinkCheckerConfigurationBuilder() {
         this.buildedObject = null;

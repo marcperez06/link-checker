@@ -13,5 +13,6 @@ public class PropertiesKeys {
 	public static final String DOMAIN_WITHELIST = "link.checker.domain.withelist";
 	public static final String OUTPUT_REPORT_PATH = "link.checker.output.report.path";
 	public static final String BASE_REPORT_NAME = "link.checker.base.report.name";
+	public static final String CLEAN_LINKS_NOT_VISITED = "link.checker.clean.links.not.visited";
 	
 }

@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import io.github.marcperez06.java_utilities.api.request.Response;
+import io.github.marcperez06.java_utilities.logger.Logger;
 import io.github.marcperez06.link_checker.report.link.LinkInfo;
 import io.github.marcperez06.link_checker.report.link.enums.Status;
 
@@ -68,7 +69,7 @@ public class LinkInfoPopulator {
 	private static <T> void fillLinkInfoForExceptionStatus(LinkInfo linkInfo, Response<T> response) {
 		Optional<Exception> error = response.getError();
 		if (error.isPresent()) {
-			linkInfo.setExceptionCausedBy(error.get().getCause().getCause().getMessage());
+			linkInfo.setExceptionCausedBy(getErrorMessage(error.get()));
 		}
 		linkInfo.setStatusCode(null);
 		fillLinkInfoForBadStatus(linkInfo, Status.EXCEPTION);
@@ -85,11 +86,25 @@ public class LinkInfoPopulator {
 		try {
 			document = Jsoup.parse(responseBody);
 		} catch (Exception e) {
-			System.out.println("Can not parse the page: " + link);
+			Logger.forceLog("Can not parse the page: " + link);
 			e.printStackTrace();
 		}
 
 		return document;
+	}
+	
+	private static String getErrorMessage(Exception error) {
+		String errorMessage = null;
+		Throwable errorCause = error.getCause();
+		if (errorCause != null) {
+			Throwable originalCause = errorCause.getCause();
+			if (originalCause != null) {
+				errorMessage = originalCause.getMessage();
+			} else {
+				errorMessage = errorCause.getMessage();
+			}
+		}
+		return errorMessage;
 	}
 
 }

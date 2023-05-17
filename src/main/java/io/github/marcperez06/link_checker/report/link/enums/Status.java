@@ -6,7 +6,7 @@ public enum Status {
 	UNEXPECTED,
 	REQUEST_DENIED,
 	FORBIDDEN,
-	NOT_FOUND,
 	EXCEPTION,
+	NOT_FOUND,
 	
 }
