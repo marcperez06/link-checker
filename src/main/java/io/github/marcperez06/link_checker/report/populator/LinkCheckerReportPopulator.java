@@ -76,7 +76,7 @@ public class LinkCheckerReportPopulator {
 
 			if (LinkValidation.linkBelongsToDomainOrWithelist(link, report)) {
 				report.addLinksNotVisited(link, linkInfo.getExits());
-			}
+			}			
 		}
 
 		report.addLinkVisited(link, linkInfo);

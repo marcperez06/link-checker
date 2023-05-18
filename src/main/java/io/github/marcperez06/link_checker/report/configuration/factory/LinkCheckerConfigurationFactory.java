@@ -67,6 +67,10 @@ public class LinkCheckerConfigurationFactory {
 			builder.baseReportName(null);
 		}
 		
+		if (!properties.existProperty(PropertiesKeys.CLEAN_LINKS_NOT_VISITED)) {
+			builder.cleanLinksNotVisited(true);
+		}
+		
 		if (builder.minDepth() == null && builder.minInteractions() == null && builder.minRequests() == null) {
 			builder.minDepth(0).minInteractions(0).minRequests(0);
 		}
@@ -106,6 +110,11 @@ public class LinkCheckerConfigurationFactory {
 		if (properties.existProperty(PropertiesKeys.BASE_REPORT_NAME)) {
 			builder.baseReportName(properties.getProperty(PropertiesKeys.BASE_REPORT_NAME));
 		}
+		
+		if (properties.existProperty(PropertiesKeys.CLEAN_LINKS_NOT_VISITED)) {
+			builder.cleanLinksNotVisited(properties.getPropertyAsBoolean(PropertiesKeys.CLEAN_LINKS_NOT_VISITED).booleanValue());
+		}
+
 	}
 
 }

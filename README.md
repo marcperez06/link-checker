@@ -88,6 +88,7 @@ configurationBuilder.sortNotFoundFirst(false);
 configurationBuilder.domainWithelist("domain you want to check that not belongs to your base domain");
 configurationBuilder.outputReportPath("where you want the report writed on json format");
 configurationBuilder.baseReportName("base name for the report");
+configurationBuilder.cleanLinksNotVisited(false);
 LinkCheckerReport report = LinkCheckerService.getReport(url, configurationBuilder.build());
 
 ```
@@ -145,6 +146,9 @@ link.checker.domain.withelist=google.com, https://nato.io
 
 link.checker.output.report.path=output/reports
 link.checker.base.report.name=report
+
+# True by default, the library will clean all the current links not visited of the report, if they are visited in other moment
+link.checker.clean.links.not.visited=false
 ```
 
 ## Example of Report

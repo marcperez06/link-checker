@@ -25,7 +25,7 @@ public class LinkCheckerConfigurationBuilder {
     
     private String baseReportName;
     
-    //TODO: add clean links not visited;
+    private boolean cleanLinksNotVisited;
 
     public LinkCheckerConfigurationBuilder() {
         this.buildedObject = null;
@@ -35,6 +35,7 @@ public class LinkCheckerConfigurationBuilder {
         this.domainWithelist = null;
         this.outputReportPath = null;
         this.baseReportName = "report";
+        this.cleanLinksNotVisited = true;
     }
 
     public Integer minDepth() {
@@ -116,6 +117,15 @@ public class LinkCheckerConfigurationBuilder {
         this.baseReportName = baseReportName;
         return this;
     }
+    
+    public boolean cleanLinksNotVisited() {
+        return this.cleanLinksNotVisited;
+    }
+
+    public LinkCheckerConfigurationBuilder cleanLinksNotVisited(boolean cleanLinksNotVisited) {
+        this.cleanLinksNotVisited = cleanLinksNotVisited;
+        return this;
+    }
 
     public LinkCheckerConfiguration build() {
         this.buildedObject = new LinkCheckerConfiguration();
@@ -127,6 +137,7 @@ public class LinkCheckerConfigurationBuilder {
         this.buildedObject.setNumThreads(this.numThreads);
         this.buildedObject.setOutputReportPath(this.outputReportPath);
         this.buildedObject.setBaseReportName(this.baseReportName);
+        this.buildedObject.setCleanLinksNotVisited(this.cleanLinksNotVisited);
         return this.buildedObject;
     }
 
