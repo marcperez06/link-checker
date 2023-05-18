@@ -15,8 +15,7 @@ public class LinkCheckerServiceWithDefaultPropertiesTest {
 	
 	@Test
 	public void linkCheckerServiceWithDefaultPropertiesTest() {
-		//String url = "https://www.nato.int/nato-welcome/index_es.html";
-		String url = "https://www.vivus.es";
+		String url = "https://www.nato.int/nato-welcome/index_es.html";
 		LinkCheckerReport report = LinkCheckerService.getReport(url);
 		assert report != null;
 		assert report.getStatistics().getNumLinksVisited() > 0;

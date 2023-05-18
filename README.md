@@ -44,13 +44,13 @@ For use link checker dependency follow this steps
 <dependency>
     <groupId>io.github.marcperez06</groupId>
     <artifactId>link-checker</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
 </dependency>
 ```
 
 - For Gradle:
 ```
-implementation 'io.github.marcperez06:link-checker:0.0.5'
+implementation 'io.github.marcperez06:link-checker:0.0.7'
 ```
 
 2. Call method `getReport()` or `getReports()` of LinkCheckerService  
@@ -112,6 +112,7 @@ List<LinkCheckerReport> reports = LinkCheckerService.getReports(urls, configurat
 min depth: 1
 sort not found first: true
 num threads: 1
+clean links not visited: true
 ```
 
 ## Properties
